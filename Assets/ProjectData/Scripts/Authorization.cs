@@ -10,9 +10,15 @@ public class Authorization : MonoBehaviourPunCallbacks
 {
     [SerializeField] private string _playFabTitleId;
     [SerializeField] private string _userName;
-    private LoginWithCustomIDRequest _request;
+    [SerializeField] private string _password;
+    [SerializeField] private string _email;
+    private LoginWithPlayFabRequest _request;
 
     public string UserName { get => _userName; set => _userName = value; }
+
+    public string PassWord { get => _password; set => _password = value; }
+
+    public string EMail { get => _email; set => _email = value; }
 
     public static event Action<string, Color> PlayFabMessage;
 
@@ -27,13 +33,13 @@ public class Authorization : MonoBehaviourPunCallbacks
             PlayFabSettings.staticSettings.TitleId = _playFabTitleId;
 
 
-        _request = new LoginWithCustomIDRequest
+        _request = new LoginWithPlayFabRequest
         {
-            CustomId = UserName,
-            CreateAccount = true
+            Username = UserName,
+            Password = PassWord,
         };
 
-        PlayFabClientAPI.LoginWithCustomID(
+        PlayFabClientAPI.LoginWithPlayFab(
             _request,
             result =>
             {
