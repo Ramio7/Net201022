@@ -29,13 +29,16 @@ public class UIPresenter : MonoBehaviour
     [Header("Photon login screen")]
     [SerializeField] private Canvas _photonLoginScreenCanvas;
     [SerializeField] private TMP_InputField _photonUsernameInput;
-    [SerializeField] private Button _createLobbyButton;
-    [SerializeField] private Button _joinLobbyButton;
+    [SerializeField] private TMP_InputField _roomnameInput;
+    [SerializeField] private Button _createRoomButton;
+    [SerializeField] private Button _joinRoomButton;
     [SerializeField] private Button _backToPlayFabButton;
-    [SerializeField] private TMP_Text _lobbyListText;
+    [SerializeField] private Button _connectPhotonButton;
 
     [Header("Utility")]
-    [SerializeField] private Authorization _authorization;
+    [SerializeField] private PlayFabAccountManager _playFabAccountManager;
+    [SerializeField] private PhotonManager _photonManager;
+
     private List<Button> _buttons = new();
     private List<Canvas> _canvas = new();
     private List<TMP_InputField> _inputFields = new();
@@ -43,7 +46,16 @@ public class UIPresenter : MonoBehaviour
     private void Start()
     {
         SubscribeEvents();
-        
+        RegisterCanvas();
+        SetMainMenuCanvasActive();
+    }
+
+    private void RegisterCanvas()
+    {
+        _canvas.Add(_photonLoginScreenCanvas);
+        _canvas.Add(_playFabLogInSreenCanvas);
+        _canvas.Add(_createAccountMenuCanvas);
+        _canvas.Add(_mainMenuCanvas);
     }
 
     private void OnDisable()
@@ -55,10 +67,8 @@ public class UIPresenter : MonoBehaviour
     {
         SubcribeMainMenuEvents();
         SubscribeCreateAccountMenuEvents();
-
-        _createLobbyButton.onClick.AddListener(_authorization.ConnectPlayFab);
-
-        _joinLobbyButton.onClick.AddListener(_authorization.DisconnectPlayFab);
+        SubscribePlayFabLoginMenuEvents();
+        SubscribePhotonLoginMenuEvents();
     }
 
     private void UnsubscribeEvents()
@@ -81,16 +91,16 @@ public class UIPresenter : MonoBehaviour
 
     private void SubscribeCreateAccountMenuEvents()
     {
-        _usernameInput.onValueChanged.AddListener(UpdateUsername);
+        _usernameInput.onValueChanged.AddListener(UpdatePlayFabUsername);
         _inputFields.Add(_usernameInput);
 
-        _passwordInput.onValueChanged.AddListener(UpdatePassword);
+        _passwordInput.onValueChanged.AddListener(UpdatePlayFabPassword);
         _inputFields.Add(_passwordInput);
 
-        _emailInput.onValueChanged.AddListener(UpdateEmail);
+        _emailInput.onValueChanged.AddListener(UpdatePlayFabEmail);
         _inputFields.Add(_emailInput);
 
-        _createNewAccountButton.onClick.AddListener(_authorization.ConnectPlayFab);
+        _createNewAccountButton.onClick.AddListener(_playFabAccountManager.CreatePlayFabAccount);
         _createNewAccountButton.onClick.AddListener(SetPlayFabLogInCanvasActive);
         _buttons.Add(_createNewAccountButton);
 
@@ -98,9 +108,50 @@ public class UIPresenter : MonoBehaviour
         _buttons.Add(_backButton);
     }
 
-    private void UpdateUsername(string username) => _authorization.UserName = username;
-    private void UpdatePassword(string password) => _authorization.PassWord = password;
-    private void UpdateEmail(string email) => _authorization.EMail = email;
+    private void SubscribePlayFabLoginMenuEvents()
+    {
+        _usernameLoginInput.onValueChanged.AddListener(UpdatePlayFabLoginUsername);
+        _inputFields.Add(_usernameLoginInput);
+
+        _passwordLoginInput.onValueChanged.AddListener(UpdatePlayFabLoginPassword);
+        _inputFields.Add(_passwordLoginInput);
+
+        _logInAccountButton.onClick.AddListener(SetPhotonLogInCanvasActive);
+        _buttons.Add(_logInAccountButton);
+
+        _backToMenuButton.onClick.AddListener(SetMainMenuCanvasActive);
+        _buttons.Add(_backToMenuButton);
+    }
+
+    private void SubscribePhotonLoginMenuEvents()
+    {
+        _photonUsernameInput.onValueChanged.AddListener(UpdatePhotonUsername);
+        _inputFields.Add(_photonUsernameInput);
+
+        _roomnameInput.onValueChanged.AddListener(UpdatePhotonRoomname);
+        _inputFields.Add(_roomnameInput);
+
+        _createRoomButton.onClick.AddListener(_photonManager.CreateRoom);
+        _buttons.Add(_createRoomButton);
+
+        _joinRoomButton.onClick.AddListener(_photonManager.JoinRoom);
+        _buttons.Add(_joinRoomButton);
+
+        _backToPlayFabButton.onClick.AddListener(SetPlayFabLogInCanvasActive);
+        _backToPlayFabButton.onClick.AddListener(_photonManager.DisconnectPhoton);
+        _buttons.Add(_backToPlayFabButton);
+
+        _connectPhotonButton.onClick.AddListener(_photonManager.ConnectPhoton);
+        _buttons.Add(_connectPhotonButton);
+    }
+
+    private void UpdatePlayFabUsername(string username) => _playFabAccountManager.PlayFabUserName = username;
+    private void UpdatePlayFabPassword(string password) => _playFabAccountManager.PlayFabPassWord = password;
+    private void UpdatePlayFabEmail(string email) => _playFabAccountManager.EMail = email;
+    private void UpdatePlayFabLoginUsername(string username) => _playFabAccountManager.PlayFabLoginUsername = username;
+    private void UpdatePlayFabLoginPassword(string password) => _playFabAccountManager.PlayFabLoginPassword = password;
+    private void UpdatePhotonUsername(string username) => _photonManager.PhotonUsername = username;
+    private void UpdatePhotonRoomname(string roomname) => _photonManager.Roomname = roomname;
 
     private void SetCanvasActive(Canvas canvasToActivate)
     {
