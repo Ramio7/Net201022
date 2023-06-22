@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 1920
     height: 989
   m_ShowMode: 4
-  m_Title: Hierarchy
+  m_Title: Game
   m_RootView: {fileID: 6}
   m_MinSize: {x: 875, y: 300}
   m_MaxSize: {x: 10000, y: 10000}
@@ -48,7 +48,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 100}
   m_MaxSize: {x: 24288, y: 16192}
   vertical: 0
-  controlID: 37
+  controlID: 98
 --- !u!114 &3
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -373,7 +373,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: a65f0000
     m_LastClickedID: 24486
-    m_ExpandedIDs: 00000000985f000000ca9a3b
+    m_ExpandedIDs: 00000000c25f0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -401,7 +401,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 00000000985f0000
+    m_ExpandedIDs: 00000000c25f0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -543,7 +543,7 @@ MonoBehaviour:
       scrollPos: {x: 0, y: 0}
       m_SelectedIDs: 
       m_LastClickedID: 0
-      m_ExpandedIDs: 16fbffff705e0000d45e0000
+      m_ExpandedIDs: 0afbffff
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -858,9 +858,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 971.4167, y: 550.8421, z: 442.85263}
+    m_Target: {x: 952.8192, y: 978.05096, z: -86.99695}
     speed: 2
-    m_Value: {x: 971.4167, y: 550.8421, z: 442.85263}
+    m_Value: {x: 952.8192, y: 978.05096, z: -86.99695}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -906,13 +906,13 @@ MonoBehaviour:
     m_GridAxis: 1
     m_gridOpacity: 0.5
   m_Rotation:
-    m_Target: {x: 0.0078094704, y: 0.001495214, z: -0.000011624384, w: 0.99996924}
+    m_Target: {x: 0.013809091, y: -0.003004658, z: 0.000041580894, w: 0.9999037}
     speed: 2
-    m_Value: {x: 0.007809464, y: 0.0014952127, z: -0.000011624374, w: 0.9999684}
+    m_Value: {x: 0.013809044, y: -0.0030046476, z: 0.000041580748, w: 0.9999002}
   m_Size:
-    m_Target: 727.79694
+    m_Target: 346.79147
     speed: 2
-    m_Value: 727.79694
+    m_Value: 346.79147
   m_Ortho:
     m_Target: 0
     speed: 2

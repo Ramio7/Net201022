@@ -1,4 +1,7 @@
+using Photon.Pun;
+using PlayFab;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,6 +21,7 @@ public class UIPresenter : MonoBehaviour
     [SerializeField] private TMP_InputField _passwordInput;
     [SerializeField] private Button _createNewAccountButton;
     [SerializeField] private Button _backButton;
+    [SerializeField] private TMP_Text _createAccountMessage;
 
     [Header("PlayFab log in screen")]
     [SerializeField] private Canvas _playFabLogInSreenCanvas;
@@ -25,6 +29,7 @@ public class UIPresenter : MonoBehaviour
     [SerializeField] private TMP_InputField _passwordLoginInput;
     [SerializeField] private Button _logInAccountButton;
     [SerializeField] private Button _backToMenuButton;
+    [SerializeField] private TMP_Text _loginMessage;
 
     [Header("Photon login screen")]
     [SerializeField] private Canvas _photonLoginScreenCanvas;
@@ -34,6 +39,7 @@ public class UIPresenter : MonoBehaviour
     [SerializeField] private Button _joinRoomButton;
     [SerializeField] private Button _backToPlayFabButton;
     [SerializeField] private Button _connectPhotonButton;
+    [SerializeField] private TMP_Text _photonLoginMessage;
 
     [Header("Utility")]
     [SerializeField] private PlayFabAccountManager _playFabAccountManager;
@@ -82,7 +88,7 @@ public class UIPresenter : MonoBehaviour
         _createAccountMenuButton.onClick.AddListener(SetCreateAccountCanvasActive);
         _buttons.Add(_createAccountMenuButton);
 
-        _logInPlayFabButton.onClick.AddListener(SetPhotonLogInCanvasActive);
+        _logInPlayFabButton.onClick.AddListener(SetPlayFabLogInCanvasActive);
         _buttons.Add(_logInPlayFabButton);
 
         _exitButton.onClick.AddListener(Application.Quit);
@@ -106,6 +112,8 @@ public class UIPresenter : MonoBehaviour
 
         _backButton.onClick.AddListener(SetMainMenuCanvasActive);
         _buttons.Add(_backButton);
+
+        _playFabAccountManager.CreateAccountMessage += UpdateCreateAccountMessage;
     }
 
     private void SubscribePlayFabLoginMenuEvents()
@@ -116,11 +124,14 @@ public class UIPresenter : MonoBehaviour
         _passwordLoginInput.onValueChanged.AddListener(UpdatePlayFabLoginPassword);
         _inputFields.Add(_passwordLoginInput);
 
+        _logInAccountButton.onClick.AddListener(_playFabAccountManager.ConnectPlayFab);
         _logInAccountButton.onClick.AddListener(SetPhotonLogInCanvasActive);
         _buttons.Add(_logInAccountButton);
 
         _backToMenuButton.onClick.AddListener(SetMainMenuCanvasActive);
         _buttons.Add(_backToMenuButton);
+
+        _playFabAccountManager.LoginMessage += UpdateLoginMessage;
     }
 
     private void SubscribePhotonLoginMenuEvents()
@@ -137,11 +148,12 @@ public class UIPresenter : MonoBehaviour
         _joinRoomButton.onClick.AddListener(_photonManager.JoinRoom);
         _buttons.Add(_joinRoomButton);
 
-        _backToPlayFabButton.onClick.AddListener(SetPlayFabLogInCanvasActive);
+        _backToPlayFabButton.onClick.AddListener(SetMainMenuCanvasActive);
         _backToPlayFabButton.onClick.AddListener(_photonManager.DisconnectPhoton);
         _buttons.Add(_backToPlayFabButton);
 
         _connectPhotonButton.onClick.AddListener(_photonManager.ConnectPhoton);
+        _connectPhotonButton.onClick.AddListener(ActivateRoomManagementButtons);
         _buttons.Add(_connectPhotonButton);
     }
 
@@ -155,12 +167,60 @@ public class UIPresenter : MonoBehaviour
 
     private void SetCanvasActive(Canvas canvasToActivate)
     {
-        foreach (var canvas in _canvas) canvas.enabled = false;
+        foreach (var canvas in _canvas) if (canvas.enabled == true) canvas.enabled = false;
         canvasToActivate.enabled = true;
     }
 
     private void SetCreateAccountCanvasActive() => SetCanvasActive(_createAccountMenuCanvas);
-    private void SetPlayFabLogInCanvasActive() => SetCanvasActive(_photonLoginScreenCanvas);
-    private void SetPhotonLogInCanvasActive() => SetCanvasActive(_photonLoginScreenCanvas);
+    private async void SetPlayFabLogInCanvasActive()
+    {
+        await Task.Delay(1000);
+        if (_createAccountMessage.color == Color.red) return;
+        if (_createAccountMenuCanvas.enabled == true) await Task.Delay(3000);
+        SetCanvasActive(_playFabLogInSreenCanvas);
+    }
+
+    private async void SetPhotonLogInCanvasActive()
+    {
+        await Task.Delay(1000);
+        if (!PlayFabClientAPI.IsClientLoggedIn()) return;
+        await Task.Delay(3000);
+        SetCanvasActive(_photonLoginScreenCanvas);
+    }
+
     private void SetMainMenuCanvasActive() => SetCanvasActive(_mainMenuCanvas);
+
+    private void UpdateCreateAccountMessage(string  message, Color color)
+    {
+        _createAccountMessage.text = message;
+        _createAccountMessage.color = color;
+        Debug.Log(_createAccountMessage.ToString());
+    }
+
+    private void UpdateLoginMessage(string message, Color color) 
+    {
+        _loginMessage.text = message;
+        _loginMessage.color = color;
+        Debug.Log(_loginMessage.ToString());
+    }
+
+    private void ActivateButton(Button button) => button.gameObject.SetActive(true);
+    private void ActivateCreateRoomButton() => ActivateButton(_createRoomButton);
+    private void ActivateJoinRoomButton() => ActivateButton(_joinRoomButton);
+    private async void ActivateRoomManagementButtons()
+    {
+        await WaitPlayerToConnect();
+        if (PhotonNetwork.IsConnected)
+        {
+            ActivateCreateRoomButton();
+            ActivateJoinRoomButton();
+            _photonLoginMessage.text = PhotonNetwork.LocalPlayer.ToStringFull();
+        }
+    }
+
+    private Task WaitPlayerToConnect()
+    {
+        while (!PhotonNetwork.IsConnected) Task.Delay(10);
+        return Task.CompletedTask;
+    }
 }

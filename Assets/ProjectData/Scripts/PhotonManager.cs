@@ -36,8 +36,6 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     {
         PhotonNetwork.CreateRoom(_roomname);
         Debug.Log($"{_roomname} succesfully created");
-        PhotonNetwork.JoinRoom(_roomname);
-        Debug.Log("Entered room");
     }
 
     public void JoinRoom()

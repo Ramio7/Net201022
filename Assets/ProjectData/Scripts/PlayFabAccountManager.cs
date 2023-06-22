@@ -19,7 +19,8 @@ public class PlayFabAccountManager : MonoBehaviour
     public string PlayFabLoginUsername { get => _playFabLoginUsername; set => _playFabLoginUsername = value; }
     public string PlayFabLoginPassword { get => _playFabLoginPassword; set => _playFabLoginPassword = value; }
 
-    public event Action<string, Color> PlayFabMessage;
+    public event Action<string, Color> CreateAccountMessage;
+    public event Action<string, Color> LoginMessage;
 
     public void CreatePlayFabAccount()
     {
@@ -32,9 +33,11 @@ public class PlayFabAccountManager : MonoBehaviour
         }, result =>
         {
             Debug.Log($"Success: {_playFabUserName}");
+            CreateAccountMessage.Invoke(result.ToString(), Color.green);
         }, error =>
         {
             Debug.LogError($"Fail: {error.ErrorMessage}");
+            CreateAccountMessage.Invoke(error.ErrorMessage, Color.red);
         });
     }
 
@@ -42,6 +45,8 @@ public class PlayFabAccountManager : MonoBehaviour
     {
         if (string.IsNullOrEmpty(PlayFabSettings.staticSettings.TitleId))
             PlayFabSettings.staticSettings.TitleId = _playFabTitleId;
+
+        if (PlayFabClientAPI.IsClientLoggedIn()) return;
 
         _request = new LoginWithPlayFabRequest
         {
@@ -54,12 +59,12 @@ public class PlayFabAccountManager : MonoBehaviour
             result =>
             {
                 Debug.Log(result.PlayFabId);
-                PlayFabMessage.Invoke($"{result.PlayFabId} connected to PlayFab", Color.green);
+                LoginMessage.Invoke($"{result.PlayFabId} connected to PlayFab", Color.green);
             },
             error =>
             {
                 Debug.LogError(error.GenerateErrorReport());
-                PlayFabMessage.Invoke(error.GenerateErrorReport(), Color.red);
+                LoginMessage.Invoke(error.GenerateErrorReport(), Color.red);
             });
     }
 }
