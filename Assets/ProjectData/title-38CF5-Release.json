@@ -1,0 +1,254 @@
+{
+  "CatalogVersion": "Release",
+  "Catalog": [
+    {
+      "ItemId": "ship_1",
+      "ItemClass": "Ship Hull",
+      "CatalogVersion": "Release",
+      "DisplayName": "Courier",
+      "Description": "Basic hull",
+      "VirtualCurrencyPrices": {
+        "CR": 5
+      },
+      "RealCurrencyPrices": {},
+      "Tags": [],
+      "CustomData": null,
+      "Consumable": {
+        "UsageCount": null,
+        "UsagePeriod": null,
+        "UsagePeriodGroup": null
+      },
+      "Container": null,
+      "Bundle": null,
+      "CanBecomeCharacter": false,
+      "IsStackable": false,
+      "IsTradable": true,
+      "ItemImageUrl": null,
+      "IsLimitedEdition": false,
+      "InitialLimitedEditionCount": 0,
+      "ActivatedMembership": null
+    },
+    {
+      "ItemId": "engine_1",
+      "ItemClass": "Engines",
+      "CatalogVersion": "Release",
+      "DisplayName": "Uranium-fueled engine",
+      "Description": "Basic engine",
+      "VirtualCurrencyPrices": {
+        "CR": 1
+      },
+      "RealCurrencyPrices": {},
+      "Tags": [],
+      "CustomData": null,
+      "Consumable": {
+        "UsageCount": null,
+        "UsagePeriod": null,
+        "UsagePeriodGroup": null
+      },
+      "Container": null,
+      "Bundle": null,
+      "CanBecomeCharacter": false,
+      "IsStackable": false,
+      "IsTradable": true,
+      "ItemImageUrl": null,
+      "IsLimitedEdition": false,
+      "InitialLimitedEditionCount": 0,
+      "ActivatedMembership": null
+    },
+    {
+      "ItemId": "reactor_1",
+      "ItemClass": "Reactors",
+      "CatalogVersion": "Release",
+      "DisplayName": "Uranium-fueled reactor",
+      "Description": "Basic reactor",
+      "VirtualCurrencyPrices": {
+        "CR": 7
+      },
+      "RealCurrencyPrices": {},
+      "Tags": [],
+      "CustomData": null,
+      "Consumable": {
+        "UsageCount": null,
+        "UsagePeriod": null,
+        "UsagePeriodGroup": null
+      },
+      "Container": null,
+      "Bundle": null,
+      "CanBecomeCharacter": false,
+      "IsStackable": false,
+      "IsTradable": true,
+      "ItemImageUrl": null,
+      "IsLimitedEdition": false,
+      "InitialLimitedEditionCount": 0,
+      "ActivatedMembership": null
+    },
+    {
+      "ItemId": "ship_2",
+      "ItemClass": "Ship Hull",
+      "CatalogVersion": "Release",
+      "DisplayName": "Trader",
+      "Description": "Slow but huge hull",
+      "VirtualCurrencyPrices": {
+        "CR": 10
+      },
+      "RealCurrencyPrices": {},
+      "Tags": [],
+      "CustomData": null,
+      "Consumable": {
+        "UsageCount": null,
+        "UsagePeriod": null,
+        "UsagePeriodGroup": null
+      },
+      "Container": null,
+      "Bundle": null,
+      "CanBecomeCharacter": false,
+      "IsStackable": false,
+      "IsTradable": true,
+      "ItemImageUrl": null,
+      "IsLimitedEdition": false,
+      "InitialLimitedEditionCount": 0,
+      "ActivatedMembership": null
+    },
+    {
+      "ItemId": "reactor_2",
+      "ItemClass": "Reactors",
+      "CatalogVersion": "Release",
+      "DisplayName": "Cold-synthesys reactor",
+      "Description": "Cold-synthesys based reactor. Gives more power and less temperature",
+      "VirtualCurrencyPrices": {
+        "CR": 25
+      },
+      "RealCurrencyPrices": {},
+      "Tags": [],
+      "CustomData": null,
+      "Consumable": {
+        "UsageCount": null,
+        "UsagePeriod": null,
+        "UsagePeriodGroup": null
+      },
+      "Container": null,
+      "Bundle": null,
+      "CanBecomeCharacter": false,
+      "IsStackable": false,
+      "IsTradable": true,
+      "ItemImageUrl": null,
+      "IsLimitedEdition": false,
+      "InitialLimitedEditionCount": 0,
+      "ActivatedMembership": null
+    },
+    {
+      "ItemId": "engine_2",
+      "ItemClass": "Engines",
+      "CatalogVersion": "Release",
+      "DisplayName": "Stream engine",
+      "Description": "This engine use reactor power to make motive power. Takes less space, little bit faster then uranium ancestor but uses power of the ship.",
+      "VirtualCurrencyPrices": {
+        "CR": 5
+      },
+      "RealCurrencyPrices": {},
+      "Tags": [],
+      "CustomData": null,
+      "Consumable": {
+        "UsageCount": null,
+        "UsagePeriod": null,
+        "UsagePeriodGroup": null
+      },
+      "Container": null,
+      "Bundle": null,
+      "CanBecomeCharacter": false,
+      "IsStackable": false,
+      "IsTradable": true,
+      "ItemImageUrl": null,
+      "IsLimitedEdition": false,
+      "InitialLimitedEditionCount": 0,
+      "ActivatedMembership": null
+    },
+    {
+      "ItemId": "new_Guy_Bundle",
+      "ItemClass": null,
+      "CatalogVersion": "Release",
+      "DisplayName": "Basic ship",
+      "Description": "Basic ship given to player on game start or in case of current ship destruction",
+      "VirtualCurrencyPrices": {},
+      "RealCurrencyPrices": {},
+      "Tags": [],
+      "CustomData": null,
+      "Consumable": {
+        "UsageCount": 1,
+        "UsagePeriod": null,
+        "UsagePeriodGroup": null
+      },
+      "Container": null,
+      "Bundle": {
+        "BundledItems": [
+          "ship_1",
+          "engine_1",
+          "reactor_1"
+        ],
+        "BundledResultTables": [],
+        "BundledVirtualCurrencies": null
+      },
+      "CanBecomeCharacter": false,
+      "IsStackable": false,
+      "IsTradable": false,
+      "ItemImageUrl": null,
+      "IsLimitedEdition": false,
+      "InitialLimitedEditionCount": 0,
+      "ActivatedMembership": null
+    },
+    {
+      "ItemId": "basic_enemy_loot",
+      "ItemClass": null,
+      "CatalogVersion": "Release",
+      "DisplayName": "Basic loot container",
+      "Description": "Drops from weakest enemies",
+      "VirtualCurrencyPrices": {},
+      "RealCurrencyPrices": null,
+      "Tags": [],
+      "CustomData": null,
+      "Consumable": {
+        "UsageCount": 1,
+        "UsagePeriod": null,
+        "UsagePeriodGroup": null
+      },
+      "Container": {
+        "KeyItemId": null,
+        "ItemContents": [],
+        "ResultTableContents": [
+          "ship_Parts_Drop"
+        ],
+        "VirtualCurrencyContents": null
+      },
+      "Bundle": null,
+      "CanBecomeCharacter": false,
+      "IsStackable": false,
+      "IsTradable": true,
+      "ItemImageUrl": null,
+      "IsLimitedEdition": false,
+      "InitialLimitedEditionCount": 0,
+      "ActivatedMembership": null
+    }
+  ],
+  "DropTables": [
+    {
+      "TableId": "ship_Parts_Drop",
+      "Nodes": [
+        {
+          "ResultItemType": "ItemId",
+          "ResultItem": "ship_2",
+          "Weight": 4
+        },
+        {
+          "ResultItemType": "ItemId",
+          "ResultItem": "reactor_2",
+          "Weight": 1
+        },
+        {
+          "ResultItemType": "ItemId",
+          "ResultItem": "engine_2",
+          "Weight": 2
+        }
+      ]
+    }
+  ]
+}
