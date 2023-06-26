@@ -29,33 +29,43 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     public void DisconnectPhoton()
     {
         PhotonNetwork.Disconnect();
-        Debug.Log("Disconnected from Photon Network");
+        //Debug.Log("Disconnected from Photon Network");
     }
 
     public void CreateRoom()
     {
         PhotonNetwork.CreateRoom(_roomname);
-        Debug.Log($"{_roomname} succesfully created");
+        //Debug.Log($"{_roomname} succesfully created");
     }
 
     public void JoinRoom()
     {
         PhotonNetwork.JoinRoom(_roomname);
-        Debug.Log($"{_roomname} entered");
+        //Debug.Log($"{_roomname} entered");
+    }
+
+    public void JoinRandomRoom()
+    {
+        PhotonNetwork.JoinRandomRoom();
+    }
+
+    public void LeaveCurrentRoom()
+    {
+        PhotonNetwork.LeaveRoom();
     }
 
     public override void OnConnectedToMaster()
     {
-        Debug.Log("OnConnectedToMaster");
+        //Debug.Log("OnConnectedToMaster");
     }
 
     public override void OnCreatedRoom()
     {
-        Debug.Log("OnCreatedRoom");
+        //Debug.Log("OnCreatedRoom");
     }
 
     public override void OnJoinedRoom()
     {
-        Debug.Log($"OnJoinedRoom {PhotonNetwork.CurrentRoom.Name}");
+       //Debug.Log($"OnJoinedRoom {PhotonNetwork.CurrentRoom.Name}");
     }
 }

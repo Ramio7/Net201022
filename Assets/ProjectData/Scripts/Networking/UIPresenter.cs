@@ -37,6 +37,8 @@ public class UIPresenter : MonoBehaviour
     [SerializeField] private TMP_InputField _roomnameInput;
     [SerializeField] private Button _createRoomButton;
     [SerializeField] private Button _joinRoomButton;
+    [SerializeField] private Button _leaveRoomButton;
+    [SerializeField] private Button _joinRandomRoomButton;
     [SerializeField] private Button _backToPlayFabButton;
     [SerializeField] private Button _connectPhotonButton;
     [SerializeField] private TMP_Text _photonLoginMessage;
@@ -44,6 +46,7 @@ public class UIPresenter : MonoBehaviour
     [Header("Utility")]
     [SerializeField] private PlayFabAccountManager _playFabAccountManager;
     [SerializeField] private PhotonManager _photonManager;
+    [SerializeField] private PhotonLobbyManager _lobbyManager;
 
     private List<Button> _buttons = new();
     private List<Canvas> _canvas = new();
@@ -93,6 +96,8 @@ public class UIPresenter : MonoBehaviour
 
         _exitButton.onClick.AddListener(Application.Quit);
         _buttons.Add(_exitButton);
+
+        ActivateAllButtons();
     }
 
     private void SubscribeCreateAccountMenuEvents()
@@ -114,6 +119,8 @@ public class UIPresenter : MonoBehaviour
         _buttons.Add(_backButton);
 
         _playFabAccountManager.CreateAccountMessage += UpdateCreateAccountMessage;
+
+        ActivateAllButtons();
     }
 
     private void SubscribePlayFabLoginMenuEvents()
@@ -132,6 +139,8 @@ public class UIPresenter : MonoBehaviour
         _buttons.Add(_backToMenuButton);
 
         _playFabAccountManager.LoginMessage += UpdateLoginMessage;
+
+        ActivateAllButtons();
     }
 
     private void SubscribePhotonLoginMenuEvents()
@@ -155,6 +164,19 @@ public class UIPresenter : MonoBehaviour
         _connectPhotonButton.onClick.AddListener(_photonManager.ConnectPhoton);
         _connectPhotonButton.onClick.AddListener(ActivateRoomManagementButtons);
         _buttons.Add(_connectPhotonButton);
+
+        _joinRandomRoomButton.onClick.AddListener(_photonManager.JoinRandomRoom);
+        _buttons.Add(_joinRandomRoomButton);
+
+        _leaveRoomButton.onClick.AddListener(_photonManager.LeaveCurrentRoom);
+        _buttons.Add(_leaveRoomButton);
+
+        ActivateAllButtons();
+    }
+
+    private void ActivateAllButtons()
+    {
+        foreach (var button in _buttons) if (!button.IsInteractable()) button.interactable = true;
     }
 
     private void UpdatePlayFabUsername(string username) => _playFabAccountManager.PlayFabUserName = username;
@@ -162,8 +184,17 @@ public class UIPresenter : MonoBehaviour
     private void UpdatePlayFabEmail(string email) => _playFabAccountManager.EMail = email;
     private void UpdatePlayFabLoginUsername(string username) => _playFabAccountManager.PlayFabLoginUsername = username;
     private void UpdatePlayFabLoginPassword(string password) => _playFabAccountManager.PlayFabLoginPassword = password;
-    private void UpdatePhotonUsername(string username) => _photonManager.PhotonUsername = username;
-    private void UpdatePhotonRoomname(string roomname) => _photonManager.Roomname = roomname;
+    private void UpdatePhotonUsername(string username)
+    {
+        _lobbyManager.PhotonUsername = username;
+        _photonManager.PhotonUsername = username;
+    }
+
+    private void UpdatePhotonRoomname(string roomname)
+    {
+        _lobbyManager.Roomname = roomname;
+        _photonManager.Roomname = roomname;
+    }
 
     private void SetCanvasActive(Canvas canvasToActivate)
     {
@@ -190,14 +221,14 @@ public class UIPresenter : MonoBehaviour
 
     private void SetMainMenuCanvasActive() => SetCanvasActive(_mainMenuCanvas);
 
-    private void UpdateCreateAccountMessage(string  message, Color color)
+    private void UpdateCreateAccountMessage(string message, Color color)
     {
         _createAccountMessage.text = message;
         _createAccountMessage.color = color;
         Debug.Log(_createAccountMessage.ToString());
     }
 
-    private void UpdateLoginMessage(string message, Color color) 
+    private void UpdateLoginMessage(string message, Color color)
     {
         _loginMessage.text = message;
         _loginMessage.color = color;
@@ -207,15 +238,15 @@ public class UIPresenter : MonoBehaviour
     private void ActivateButton(Button button) => button.gameObject.SetActive(true);
     private void ActivateCreateRoomButton() => ActivateButton(_createRoomButton);
     private void ActivateJoinRoomButton() => ActivateButton(_joinRoomButton);
+    private void ActivateJoinRandomRoomButton() => ActivateButton(_joinRandomRoomButton);
+    private void ActivateLeaveRoomButton() => ActivateButton(_leaveRoomButton);
     private async void ActivateRoomManagementButtons()
     {
         await WaitPlayerToConnect();
-        if (PhotonNetwork.IsConnected)
-        {
-            ActivateCreateRoomButton();
-            ActivateJoinRoomButton();
-            _photonLoginMessage.text = PhotonNetwork.LocalPlayer.ToStringFull();
-        }
+        ActivateCreateRoomButton();
+        ActivateJoinRoomButton();
+        ActivateJoinRandomRoomButton();
+        ActivateLeaveRoomButton();
     }
 
     private Task WaitPlayerToConnect()
