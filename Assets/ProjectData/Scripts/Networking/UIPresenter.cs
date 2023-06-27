@@ -42,6 +42,7 @@ public class UIPresenter : MonoBehaviour
     [SerializeField] private Button _backToPlayFabButton;
     [SerializeField] private Button _connectPhotonButton;
     [SerializeField] private TMP_Text _photonLoginMessage;
+    [SerializeField] private ScrollRect _roomList;
 
     [Header("Utility")]
     [SerializeField] private PlayFabAccountManager _playFabAccountManager;
@@ -170,6 +171,8 @@ public class UIPresenter : MonoBehaviour
 
         _leaveRoomButton.onClick.AddListener(_photonManager.LeaveCurrentRoom);
         _buttons.Add(_leaveRoomButton);
+
+        
 
         ActivateAllButtons();
     }
