@@ -1,4 +1,5 @@
 using Photon.Pun;
+using Photon.Realtime;
 using PlayFab;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -48,10 +49,12 @@ public class UIPresenter : MonoBehaviour
     [SerializeField] private PlayFabAccountManager _playFabAccountManager;
     [SerializeField] private PhotonManager _photonManager;
     [SerializeField] private PhotonLobbyManager _lobbyManager;
+    [SerializeField] private RoomInfoButton _roomLineButtonPrefab;
 
     private List<Button> _buttons = new();
     private List<Canvas> _canvas = new();
     private List<TMP_InputField> _inputFields = new();
+    private RoomInfo _selectedRoomInfo;
 
     private void Start()
     {
@@ -152,10 +155,10 @@ public class UIPresenter : MonoBehaviour
         _roomnameInput.onValueChanged.AddListener(UpdatePhotonRoomname);
         _inputFields.Add(_roomnameInput);
 
-        _createRoomButton.onClick.AddListener(_photonManager.CreateRoom);
+        _createRoomButton.onClick.AddListener(_lobbyManager.CreateRoom);
         _buttons.Add(_createRoomButton);
 
-        _joinRoomButton.onClick.AddListener(_photonManager.JoinRoom);
+        _joinRoomButton.onClick.AddListener(JoinOutlinedRoom);
         _buttons.Add(_joinRoomButton);
 
         _backToPlayFabButton.onClick.AddListener(SetMainMenuCanvasActive);
@@ -172,10 +175,19 @@ public class UIPresenter : MonoBehaviour
         _leaveRoomButton.onClick.AddListener(_photonManager.LeaveCurrentRoom);
         _buttons.Add(_leaveRoomButton);
 
-        
-
         ActivateAllButtons();
     }
+
+    private void JoinOutlinedRoom() => _lobbyManager.JoinRoom(new()
+    {
+        RoomName = _selectedRoomInfo.Name,
+        RoomOptions = new()
+        {
+            MaxPlayers = _selectedRoomInfo.MaxPlayers,
+            IsOpen = _selectedRoomInfo.IsOpen,
+            IsVisible = _selectedRoomInfo.IsVisible,
+        }
+    });
 
     private void ActivateAllButtons()
     {

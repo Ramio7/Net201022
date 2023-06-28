@@ -35,6 +35,21 @@ public class PhotonLobbyManager : MonoBehaviour, IConnectionCallbacks, IMatchmak
         _callbackMessages.text = _loadBalancingClient?.State.ToString();
     }
 
+    public void CreateRoom() => 
+        _loadBalancingClient.OpCreateRoom(
+        new EnterRoomParams()
+    {
+        RoomName = _roomname,
+        RoomOptions = new()
+        {
+            MaxPlayers = 4,
+            IsOpen = true,
+            IsVisible = true,
+        },
+    });
+
+    public void JoinRoom(EnterRoomParams enterRoomParams) => _loadBalancingClient.OpJoinRoom(enterRoomParams);
+
     public void OnConnected()
     {
         Debug.LogWarning("Connected");
