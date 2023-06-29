@@ -43,24 +43,32 @@ public class UIPresenter : MonoBehaviour
     [SerializeField] private Button _backToPlayFabButton;
     [SerializeField] private Button _connectPhotonButton;
     [SerializeField] private TMP_Text _photonLoginMessage;
-    [SerializeField] private ScrollRect _roomList;
+    [SerializeField] private Transform _roomListTransform;
 
     [Header("Utility")]
     [SerializeField] private PlayFabAccountManager _playFabAccountManager;
     [SerializeField] private PhotonManager _photonManager;
     [SerializeField] private PhotonLobbyManager _lobbyManager;
-    [SerializeField] private RoomInfoButton _roomLineButtonPrefab;
+    [SerializeField] private RoomInfoContainer _roomContainerPrefab;
 
     private List<Button> _buttons = new();
     private List<Canvas> _canvas = new();
     private List<TMP_InputField> _inputFields = new();
     private RoomInfo _selectedRoomInfo;
+    private RoomListController _roomListController;
 
     private void Start()
     {
+        StartRoomListController();
         SubscribeEvents();
         RegisterCanvas();
         SetMainMenuCanvasActive();
+    }
+
+    private void StartRoomListController()
+    {
+        _roomListController = new RoomListController(_roomListTransform, _roomContainerPrefab);
+        _lobbyManager.OnRoomListUpdated += _roomListController.UpdateRoomList;
     }
 
     private void RegisterCanvas()
@@ -74,6 +82,7 @@ public class UIPresenter : MonoBehaviour
     private void OnDisable()
     {
         UnsubscribeEvents();
+        _roomListController?.Dispose();
     }
 
     private void SubscribeEvents()
@@ -88,6 +97,8 @@ public class UIPresenter : MonoBehaviour
     {
         foreach (var button in _buttons) button.onClick?.RemoveAllListeners();
         foreach (var inputField in _inputFields) inputField.onValueChanged?.RemoveAllListeners();
+        _lobbyManager.OnRoomListUpdated -= _roomListController.UpdateRoomList;
+        
     }
 
     private void SubcribeMainMenuEvents()
@@ -169,10 +180,10 @@ public class UIPresenter : MonoBehaviour
         _connectPhotonButton.onClick.AddListener(ActivateRoomManagementButtons);
         _buttons.Add(_connectPhotonButton);
 
-        _joinRandomRoomButton.onClick.AddListener(_photonManager.JoinRandomRoom);
+        _joinRandomRoomButton.onClick.AddListener(_lobbyManager.JoinRandomRoom);
         _buttons.Add(_joinRandomRoomButton);
 
-        _leaveRoomButton.onClick.AddListener(_photonManager.LeaveCurrentRoom);
+        _leaveRoomButton.onClick.AddListener(_lobbyManager.LeaveRoom);
         _buttons.Add(_leaveRoomButton);
 
         ActivateAllButtons();

@@ -3270,6 +3270,7 @@ GameObject:
   m_Component:
   - component: {fileID: 802318174}
   - component: {fileID: 802318176}
+  - component: {fileID: 802318177}
   m_Layer: 0
   m_Name: Content
   m_TagString: Untagged
@@ -3294,7 +3295,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0.00004058883}
   m_SizeDelta: {x: 1900, y: 950}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!23 &802318176
@@ -3339,6 +3340,32 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &802318177
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 802318173}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 1
+  m_Spacing: 3
+  m_ChildForceExpandWidth: 0
+  m_ChildForceExpandHeight: 0
+  m_ChildControlWidth: 0
+  m_ChildControlHeight: 0
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
+  m_ReverseArrangement: 0
 --- !u!1 &851295879
 GameObject:
   m_ObjectHideFlags: 0
@@ -7604,11 +7631,11 @@ MonoBehaviour:
   _backToPlayFabButton: {fileID: 1964849378}
   _connectPhotonButton: {fileID: 1315890438}
   _photonLoginMessage: {fileID: 1417320956}
-  _roomList: {fileID: 0}
+  _roomListTransform: {fileID: 802318174}
   _playFabAccountManager: {fileID: 1308262240}
   _photonManager: {fileID: 1308262242}
   _lobbyManager: {fileID: 1308262243}
-  _roomLineButtonPrefab: {fileID: 0}
+  _roomContainerPrefab: {fileID: 5488995384172735349, guid: e69d03b6a0d986546b7b47cc532aa2a0, type: 3}
 --- !u!1 &1875328539
 GameObject:
   m_ObjectHideFlags: 0

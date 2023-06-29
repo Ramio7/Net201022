@@ -48,7 +48,18 @@ public class PhotonLobbyManager : MonoBehaviour, IConnectionCallbacks, IMatchmak
         },
     });
 
+    public void JoinRandomRoom()
+    {
+        _loadBalancingClient.OpJoinRandomRoom();
+    }
+
     public void JoinRoom(EnterRoomParams enterRoomParams) => _loadBalancingClient.OpJoinRoom(enterRoomParams);
+
+    public void LeaveRoom()
+    {
+        _loadBalancingClient.OpLeaveRoom(true);
+        Debug.LogWarning("Left current room");
+    }
 
     public void OnConnected()
     {
