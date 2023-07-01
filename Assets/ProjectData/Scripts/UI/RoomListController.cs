@@ -7,7 +7,7 @@ using Object = UnityEngine.Object;
 
 public class RoomListController : IDisposable
 {
-    private List<RoomInfoContainer> _roomList = new();
+    public List<RoomInfoContainer> _roomList { get; private set; } = new();
     private Transform _roomListContainerTransform;
     private RoomInfoContainer _roomInfoButtonPrefab;
 
@@ -33,7 +33,7 @@ public class RoomListController : IDisposable
     {
         var newRoomButton = Object.Instantiate(_roomInfoButtonPrefab);
         newRoomButton.transform.SetParent(_roomListContainerTransform, false);
-        var roomInfoContainer = newRoomButton.AddComponent<RoomInfoContainer>();
+        newRoomButton.TryGetComponent<RoomInfoContainer>(out var roomInfoContainer);
         roomInfoContainer.SetRoomInfo(roomInfo);
         _roomList.Add(roomInfoContainer);
     }

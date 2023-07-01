@@ -1,12 +1,15 @@
 using Photon.Realtime;
+using System;
 using TMPro;
 using UnityEngine;
 
 public class RoomInfoContainer : MonoBehaviour
 {
+    [SerializeField] private TMP_Text _roomInfoText;
+
     public RoomInfo ButtonRoomInfo { get; private set; }
 
-    [SerializeField] private TMP_Text _roomInfoText;
+    public event Action<RoomInfo> OnRoomInfoContainerClick;
 
     public void SetRoomInfo(RoomInfo roomInfo)
     {

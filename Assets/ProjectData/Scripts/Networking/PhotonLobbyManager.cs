@@ -35,30 +35,44 @@ public class PhotonLobbyManager : MonoBehaviour, IConnectionCallbacks, IMatchmak
         _callbackMessages.text = _loadBalancingClient?.State.ToString();
     }
 
-    public void CreateRoom() => 
+
+    public void ConnectPhoton()
+    {
+        _loadBalancingClient.AuthValues = new()
+        {
+            UserId = _photonUsername
+        };
+        _loadBalancingClient.OpJoinLobby(TypedLobby.Default);
+    }
+
+    public void DisconnectPhoton() => _loadBalancingClient.Disconnect(DisconnectCause.None);
+
+    public void CreateRoom()
+    {
         _loadBalancingClient.OpCreateRoom(
         new EnterRoomParams()
-    {
-        RoomName = _roomname,
-        RoomOptions = new()
         {
-            MaxPlayers = 4,
-            IsOpen = true,
-            IsVisible = true,
-        },
-    });
-
-    public void JoinRandomRoom()
-    {
-        _loadBalancingClient.OpJoinRandomRoom();
+            RoomName = _roomname,
+            RoomOptions = new()
+            {
+                MaxPlayers = 4,
+                IsOpen = true,
+                IsVisible = true,
+            },
+        });
     }
+
+    public void JoinRandomRoom() => _loadBalancingClient.OpJoinRandomRoom();
 
     public void JoinRoom(EnterRoomParams enterRoomParams) => _loadBalancingClient.OpJoinRoom(enterRoomParams);
 
-    public void LeaveRoom()
+    public void LeaveRoom() => _loadBalancingClient.OpLeaveRoom(true);
+
+    public void StartTheGame()
     {
-        _loadBalancingClient.OpLeaveRoom(true);
-        Debug.LogWarning("Left current room");
+        var currentRoom = _loadBalancingClient.CurrentRoom;
+        currentRoom.IsOpen = false;
+        currentRoom.IsVisible = false;
     }
 
     public void OnConnected()
@@ -145,5 +159,6 @@ public class PhotonLobbyManager : MonoBehaviour, IConnectionCallbacks, IMatchmak
     public void OnRoomListUpdate(List<RoomInfo> roomList)
     {
         OnRoomListUpdated.Invoke(roomList);
+        Debug.LogWarning("Room list updated");
     }
 }
