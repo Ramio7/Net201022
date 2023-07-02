@@ -12,9 +12,11 @@ public class PhotonLobbyManager : MonoBehaviour, IConnectionCallbacks, IMatchmak
     [SerializeField] private string _photonUsername;
     [SerializeField] private string _roomname;
     private LoadBalancingClient _loadBalancingClient = new();
+    private bool _roomIsPrivate;
 
     public string PhotonUsername { get => _photonUsername; set => _photonUsername = value; }
     public string Roomname { get => _roomname; set => _roomname = value; }
+    public bool RoomIsPrivate { get => _roomIsPrivate; set => _roomIsPrivate = value; }
 
     public event Action<List<RoomInfo>> OnRoomListUpdated;
 
@@ -57,7 +59,7 @@ public class PhotonLobbyManager : MonoBehaviour, IConnectionCallbacks, IMatchmak
             {
                 MaxPlayers = 4,
                 IsOpen = true,
-                IsVisible = true,
+                IsVisible = _roomIsPrivate,
             },
         });
     }

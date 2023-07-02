@@ -6,7 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UIPresenter : MonoBehaviour // Сделать возможность создания приватной комнаты
+public class UIPresenter : MonoBehaviour
 {
     [Header("Main menu")]
     [SerializeField] private Canvas _mainMenuCanvas;
@@ -36,9 +36,14 @@ public class UIPresenter : MonoBehaviour // Сделать возможность создания приватн
     [SerializeField] private TMP_InputField _roomNameInput;
     [SerializeField] private Button _createRoomButton;
     [SerializeField] private Button _joinRoomButton;
-    [SerializeField] private Button _backToPlayFabButton;
+    [SerializeField] private Button _backToMainMenuButton;
     [SerializeField] private TMP_Text _photonLoginMessage;
     [SerializeField] private Transform _roomListTransform;
+    [SerializeField] private Canvas _roomPropertiesCanvas;
+    [SerializeField] private TMP_InputField _roomNameInputToCreate;
+    [SerializeField] private Button _createRoomInPropertiesButton;
+    [SerializeField] private Button _backToLobbyButton;
+    [SerializeField] private Toggle _privateRoomToggle;
 
     [Header("Utility")]
     [SerializeField] private PlayFabAccountManager _playFabAccountManager;
@@ -159,15 +164,26 @@ public class UIPresenter : MonoBehaviour // Сделать возможность создания приватн
         _roomNameInput.onValueChanged.AddListener(UpdatePhotonRoomname);
         _inputFields.Add(_roomNameInput);
 
-        _createRoomButton.onClick.AddListener(_lobbyManager.CreateRoom);
+        _createRoomButton.onClick.AddListener(SetRoomPropertiesCanvasActive);
         _buttons.Add(_createRoomButton);
 
         _joinRoomButton.onClick.AddListener(JoinRoom);
         _buttons.Add(_joinRoomButton);
 
-        _backToPlayFabButton.onClick.AddListener(SetMainMenuCanvasActive);
-        _backToPlayFabButton.onClick.AddListener(_lobbyManager.DisconnectPhoton);
-        _buttons.Add(_backToPlayFabButton);
+        _backToMainMenuButton.onClick.AddListener(SetMainMenuCanvasActive);
+        _backToMainMenuButton.onClick.AddListener(_lobbyManager.DisconnectPhoton);
+        _buttons.Add(_backToMainMenuButton);
+
+        _roomNameInputToCreate.onValueChanged.AddListener(UpdatePhotonRoomname);
+        _inputFields.Add (_roomNameInputToCreate);
+
+        _createRoomInPropertiesButton.onClick.AddListener(_lobbyManager.CreateRoom);
+        _buttons.Add(_createRoomInPropertiesButton);
+
+        _backToLobbyButton.onClick.AddListener(SetRoomCanvasUnactive);
+        _buttons.Add(_backToLobbyButton);
+
+        _privateRoomToggle.onValueChanged.AddListener(UpdatePrivateRoomToggle);
 
         ActivateAllButtons();
     }
@@ -213,11 +229,15 @@ public class UIPresenter : MonoBehaviour // Сделать возможность создания приватн
         _photonManager.Roomname = roomname;
     }
 
+    private void UpdatePrivateRoomToggle(bool toggleIsOn) => _lobbyManager.RoomIsPrivate = _privateRoomToggle.isOn;
+
     private void SetCanvasActive(Canvas canvasToActivate)
     {
         foreach (var canvas in _canvas) if (canvas.enabled == true) canvas.enabled = false;
         canvasToActivate.enabled = true;
     }
+
+    private void SetCanvasActiveSelf(Canvas canvasToActivate) => canvasToActivate.enabled = true;
 
     private void SetCreateAccountCanvasActive() => SetCanvasActive(_createAccountMenuCanvas);
 
@@ -236,6 +256,12 @@ public class UIPresenter : MonoBehaviour // Сделать возможность создания приватн
     }
 
     private void SetMainMenuCanvasActive() => SetCanvasActive(_mainMenuCanvas);
+
+    private void SetRoomPropertiesCanvasActive() => SetCanvasActiveSelf(_roomPropertiesCanvas);
+
+    private void SetCanvasUnactive(Canvas canvasToUnactivate) => canvasToUnactivate.enabled = false;
+
+    private void SetRoomCanvasUnactive() => SetCanvasUnactive(_roomPropertiesCanvas);
 
     private Task WaitPlayFabLogin()
     {
