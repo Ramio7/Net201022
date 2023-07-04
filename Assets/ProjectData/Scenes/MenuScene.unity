@@ -3250,7 +3250,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: -3887.7468, y: -67093.89}
+  m_AnchoredPosition: {x: -4991.7188, y: -74693.89}
   m_SizeDelta: {x: 1900, y: 950}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!23 &802318176
@@ -4350,8 +4350,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
-  m_fontSizeBase: 14
+  m_fontSize: 33
+  m_fontSizeBase: 33
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -8458,7 +8458,6 @@ MonoBehaviour:
   _backToLobbyRoomButton: {fileID: 1213341605}
   _playFabAccountManager: {fileID: 1308262240}
   _photonManager: {fileID: 1308262242}
-  _lobbyManager: {fileID: 0}
   _roomContainerPrefab: {fileID: 5488995384172735349, guid: e69d03b6a0d986546b7b47cc532aa2a0, type: 3}
 --- !u!1 &1875328539
 GameObject:
@@ -8853,7 +8852,7 @@ MonoBehaviour:
   m_HideSoftKeyboard: 0
   m_CharacterValidation: 0
   m_RegexValue: 
-  m_GlobalPointSize: 14
+  m_GlobalPointSize: 33
   m_CharacterLimit: 0
   m_OnEndEdit:
     m_PersistentCalls:

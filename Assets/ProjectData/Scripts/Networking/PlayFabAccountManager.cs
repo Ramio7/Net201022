@@ -22,7 +22,7 @@ public class PlayFabAccountManager : MonoBehaviour
     public event Action<string, Color> OnCreateAccountMessageUpdate;
     public event Action<string, Color> OnLoginMessageUpdate;
 
-    public static event Action<float> OnUserHpUpdate;
+    public static event Action<float, string> OnUserHpUpdate;
 
     private void Awake()
     {
@@ -90,19 +90,22 @@ public class PlayFabAccountManager : MonoBehaviour
                 {
                     PlayFabId = playFabId,
                 },
-                result => 
+                result =>
                 {
-                    if (float.TryParse(result.Data["Health"].Value, out var userHP)) OnUserHpUpdate.Invoke(userHP);
+                    if (float.TryParse(result.Data["Health"].Value, out var userHP)) OnUserHpUpdate?.Invoke(userHP, playFabId);
                     else return;
+                    Debug.LogWarning($"User startin HP: {userHP}");
                 },
-                error => 
-                {
-                    Debug.Log(error.GenerateErrorReport());
-                });
+                OnError());
             },
-            error =>
-            {
-                Debug.Log(error.GenerateErrorReport());
-            });
+            OnError());
+    }
+
+    private Action<PlayFabError> OnError()
+    {
+        return error =>
+        {
+            Debug.Log(error.GenerateErrorReport());
+        };
     }
 }

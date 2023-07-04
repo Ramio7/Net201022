@@ -9,7 +9,10 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     [SerializeField] private string _photonUsername;
     [SerializeField] private string _roomname;
 
-    public Action<List<RoomInfo>> OnRoomListUpdated;
+    private ClientState _currentState;
+
+    public event Action<List<RoomInfo>> OnRoomListUpdated;
+    public event Action<string> OnClientStateChanged;
 
     public string PhotonUsername { get => _photonUsername; set => _photonUsername = value; }
     public string Roomname { get => _roomname; set => _roomname = value; }
@@ -18,6 +21,15 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     private void Awake()
     {
         DontDestroyOnLoad(this);
+    }
+
+    private void Update()
+    {
+        if (_currentState != PhotonNetwork.NetworkClientState)
+        {
+            OnClientStateChanged?.Invoke(PhotonNetwork.NetworkClientState.ToString());
+            _currentState = PhotonNetwork.NetworkClientState;
+        }
     }
 
     public void ConnectPhoton()
@@ -34,8 +46,10 @@ public class PhotonManager : MonoBehaviourPunCallbacks
             PhotonNetwork.NickName = _photonUsername;
             PhotonNetwork.ConnectUsingSettings();
             PhotonNetwork.GameVersion = PhotonNetwork.AppVersion;
+            PhotonNetwork.JoinLobby();
         }
     }
+
     public void DisconnectPhoton()
     {
         PhotonNetwork.Disconnect();
@@ -47,7 +61,7 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         {
             IsOpen = true,
             IsVisible = RoomIsPrivate,
-            MaxPlayers = 4
+            MaxPlayers = 4,
         });
     }
 
@@ -75,5 +89,6 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
         OnRoomListUpdated.Invoke(roomList);
+        Debug.Log("Room list updated");
     }
 }

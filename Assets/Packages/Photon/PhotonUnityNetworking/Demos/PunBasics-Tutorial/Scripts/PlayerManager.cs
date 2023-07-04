@@ -9,6 +9,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using Photon.Pun.UtilityScripts;
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -29,6 +30,8 @@ namespace Photon.Pun.Demo.PunBasics
 
         [Tooltip("The local player instance. Use this to know if the local player is represented in the Scene")]
         public static GameObject LocalPlayerInstance;
+
+        public event Action<float> OnPlayerHpValueChanged;
 
         #endregion
 
@@ -270,7 +273,6 @@ namespace Photon.Pun.Demo.PunBasics
                 }
             }
         }
-
         #endregion
 
         #region IPunObservable implementation
@@ -282,6 +284,7 @@ namespace Photon.Pun.Demo.PunBasics
                 // We own this player: send the others our data
                 stream.SendNext(this.IsFiring);
                 stream.SendNext(this.Health);
+                UpdatePlayerHp(Health);
             }
             else
             {
@@ -290,6 +293,8 @@ namespace Photon.Pun.Demo.PunBasics
                 this.Health = (float)stream.ReceiveNext();
             }
         }
+
+        private void UpdatePlayerHp(float health) => OnPlayerHpValueChanged?.Invoke(health);
 
         #endregion
     }

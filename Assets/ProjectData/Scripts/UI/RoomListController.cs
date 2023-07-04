@@ -7,7 +7,7 @@ using Object = UnityEngine.Object;
 
 public class RoomListController : IDisposable
 {
-    public List<RoomInfoContainer> _roomList { get; private set; } = new();
+    public List<RoomInfoContainer> RoomList { get; private set; } = new();
     private Transform _roomListContainerTransform;
     private RoomInfoContainer _roomInfoButtonPrefab;
 
@@ -19,7 +19,7 @@ public class RoomListController : IDisposable
 
     public void Dispose()
     {
-        foreach (var roomInfoContainer in _roomList)
+        foreach (var roomInfoContainer in RoomList)
         {
             roomInfoContainer.ClearRoomInfo();
             Object.Destroy(roomInfoContainer.gameObject);
@@ -35,18 +35,27 @@ public class RoomListController : IDisposable
         newRoomButton.transform.SetParent(_roomListContainerTransform, false);
         newRoomButton.TryGetComponent<RoomInfoContainer>(out var roomInfoContainer);
         roomInfoContainer.SetRoomInfo(roomInfo);
-        _roomList.Add(roomInfoContainer);
+        RoomList.Add(roomInfoContainer);
+    }
+
+    private void CreateRoomInfoContainer(Room room)
+    {
+        var newRoomButton = Object.Instantiate(_roomInfoButtonPrefab);
+        newRoomButton.transform.SetParent(_roomListContainerTransform, false);
+        newRoomButton.TryGetComponent<RoomInfoContainer>(out var roomInfoContainer);
+        roomInfoContainer.SetRoomInfo(room);
+        RoomList.Add(roomInfoContainer);
     }
 
     private void SetRoomContainerActive(RoomInfo roomInfo, int indexInRoomList)
     {
-        _roomList[indexInRoomList].gameObject.SetActive(true);
-        _roomList[indexInRoomList].SetRoomInfo(roomInfo);
+        RoomList[indexInRoomList].gameObject.SetActive(true);
+        RoomList[indexInRoomList].SetRoomInfo(roomInfo);
     }
 
     private void SetAllRoomContainersUnactive()
     {
-        foreach (var roomInfoContainer in _roomList)
+        foreach (var roomInfoContainer in RoomList)
         {
             roomInfoContainer.ClearRoomInfo();
             roomInfoContainer.gameObject.SetActive(false);
@@ -59,10 +68,10 @@ public class RoomListController : IDisposable
 
         foreach (var roomInfo in roomInfos)
         {
-            for (var i = 0; i < _roomList.Count; i++)
+            for (var i = 0; i < RoomList.Count; i++)
             {
 
-                if ((_roomList[i] == null && i == 0) || (_roomList[i].gameObject.activeSelf == true && i == _roomList.Count - 1)) continue;
+                if ((RoomList[i] == null && i == 0) || (RoomList[i].gameObject.activeSelf == true && i == RoomList.Count - 1)) continue;
                 SetRoomContainerActive(roomInfo, i);
             }
 

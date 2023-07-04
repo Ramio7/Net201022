@@ -57,10 +57,10 @@ public class UIPresenter : MonoBehaviour
     [SerializeField] private PhotonManager _photonManager;
     [SerializeField] private RoomInfoContainer _roomContainerPrefab;
 
-    private List<Button> _buttons = new();
-    private List<Canvas> _canvas = new();
-    private List<TMP_InputField> _inputFields = new();
-    private List<Toggle> _toggles = new();
+    private readonly List<Button> _buttons = new();
+    private readonly List<Canvas> _canvas = new();
+    private readonly List<TMP_InputField> _inputFields = new();
+    private readonly List<Toggle> _toggles = new();
     private RoomListController _roomListController;
 
     private void Awake()
@@ -69,13 +69,21 @@ public class UIPresenter : MonoBehaviour
         SubscribeEvents();
         RegisterCanvas();
         SetMainMenuCanvasActive();
+
+        _playFabAccountManager.OnCreateAccountMessageUpdate += UpdateCreateAccountMessage;
+        _playFabAccountManager.OnLoginMessageUpdate += UpdateLoginMessage;
     }
 
     private void StartRoomListController()
     {
         _roomListController = new RoomListController(_roomListTransform, _roomContainerPrefab);
-        _photonManager.OnRoomListUpdated += _roomListController.UpdateRoomList;
-        foreach (var roomInfoContainer in _roomListController._roomList) roomInfoContainer.OnRoomInfoContainerClick += JoinOutlinedRoom;
+        _photonManager.OnRoomListUpdated += UpdateRoomInfoContainers;
+    }
+
+    private void UpdateRoomInfoContainers(List<RoomInfo> roomList)
+    {
+        _roomListController.UpdateRoomList(roomList);
+        foreach (var roomInfoContainer in _roomListController.RoomList) roomInfoContainer.OnRoomInfoContainerClick += JoinOutlinedRoom;
     }
 
     private void RegisterCanvas()
@@ -109,7 +117,9 @@ public class UIPresenter : MonoBehaviour
         foreach (var button in _buttons) button.onClick?.RemoveAllListeners();
         foreach (var inputField in _inputFields) inputField.onValueChanged?.RemoveAllListeners();
         foreach (var toggle in _toggles) toggle.onValueChanged?.RemoveAllListeners();
-        _photonManager.OnRoomListUpdated -= _roomListController.UpdateRoomList;
+
+        _photonManager.OnRoomListUpdated -= UpdateRoomInfoContainers;
+        foreach (var roomInfoContainer in _roomListController.RoomList) roomInfoContainer.OnRoomInfoContainerClick -= JoinOutlinedRoom;
         _playFabAccountManager.OnCreateAccountMessageUpdate -= UpdateCreateAccountMessage;
         _playFabAccountManager.OnLoginMessageUpdate -= UpdateLoginMessage;
     }
@@ -143,8 +153,6 @@ public class UIPresenter : MonoBehaviour
 
         _backButton.onClick.AddListener(SetMainMenuCanvasActive);
         _buttons.Add(_backButton);
-
-        _playFabAccountManager.OnCreateAccountMessageUpdate += UpdateCreateAccountMessage;
     }
 
     private void SubscribePlayFabLoginMenuEvents()
@@ -162,8 +170,6 @@ public class UIPresenter : MonoBehaviour
 
         _backToMenuButton.onClick.AddListener(SetMainMenuCanvasActive);
         _buttons.Add(_backToMenuButton);
-
-        _playFabAccountManager.OnLoginMessageUpdate += UpdateLoginMessage;
     }
 
     private void SubscribePhotonLoginMenuEvents()
@@ -176,6 +182,8 @@ public class UIPresenter : MonoBehaviour
 
         _joinRoomButton.onClick.AddListener(JoinRoom);
         _buttons.Add(_joinRoomButton);
+
+        _photonManager.OnClientStateChanged += UpdatePhotonClientStateOutput;
 
         _backToMainMenuButton.onClick.AddListener(SetMainMenuCanvasActive);
         _backToMainMenuButton.onClick.AddListener(_photonManager.DisconnectPhoton);
@@ -204,6 +212,7 @@ public class UIPresenter : MonoBehaviour
         _buttons.Add(_startGameButton);
 
         _backToLobbyRoomButton.onClick.AddListener(SetPhotonLogInCanvasActive);
+        _backToLobbyRoomButton.onClick.AddListener(_photonManager.LeaveCurrentRoom);
         _buttons.Add(_backToLobbyRoomButton);
     }
 
@@ -281,5 +290,11 @@ public class UIPresenter : MonoBehaviour
         _loginMessage.text = message;
         _loginMessage.color = color;
         Debug.Log(_loginMessage.ToString());
+    }
+
+    private void UpdatePhotonClientStateOutput(string state)
+    {
+        _photonLoginMessage.text = state;
+        Debug.Log(state);
     }
 }
