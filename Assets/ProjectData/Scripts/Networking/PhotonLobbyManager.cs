@@ -2,6 +2,7 @@ using Photon.Pun;
 using Photon.Realtime;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 
@@ -19,6 +20,11 @@ public class PhotonLobbyManager : MonoBehaviour, IConnectionCallbacks, IMatchmak
     public bool RoomIsPrivate { get => _roomIsPrivate; set => _roomIsPrivate = value; }
 
     public event Action<List<RoomInfo>> OnRoomListUpdated;
+
+    private void Awake()
+    {
+        DontDestroyOnLoad(this);
+    }
 
     private void Start()
     {
@@ -64,17 +70,10 @@ public class PhotonLobbyManager : MonoBehaviour, IConnectionCallbacks, IMatchmak
         });
     }
 
-    public void JoinRandomRoom() => _loadBalancingClient.OpJoinRandomRoom();
-
-    public void JoinRoom(EnterRoomParams enterRoomParams) => _loadBalancingClient.OpJoinRoom(enterRoomParams);
-
-    public void LeaveRoom() => _loadBalancingClient.OpLeaveRoom(true);
-
-    public void StartTheGame()
+    public void LeaveGame()
     {
-        var currentRoom = _loadBalancingClient.CurrentRoom;
-        currentRoom.IsOpen = false;
-        currentRoom.IsVisible = false;
+        PhotonNetwork.LoadLevel("MenuScene");
+        _loadBalancingClient.OpLeaveRoom(false);
     }
 
     public void OnConnected()

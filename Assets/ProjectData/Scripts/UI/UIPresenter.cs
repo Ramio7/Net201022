@@ -39,21 +39,28 @@ public class UIPresenter : MonoBehaviour
     [SerializeField] private Button _backToMainMenuButton;
     [SerializeField] private TMP_Text _photonLoginMessage;
     [SerializeField] private Transform _roomListTransform;
+
+    [Header("Room properties screen")]
     [SerializeField] private Canvas _roomPropertiesCanvas;
     [SerializeField] private TMP_InputField _roomNameInputToCreate;
     [SerializeField] private Button _createRoomInPropertiesButton;
     [SerializeField] private Button _backToLobbyButton;
     [SerializeField] private Toggle _privateRoomToggle;
 
+    [Header("Room screen")]
+    [SerializeField] private Canvas _roomCanvas;
+    [SerializeField] private Button _startGameButton;
+    [SerializeField] private Button _backToLobbyRoomButton;
+
     [Header("Utility")]
     [SerializeField] private PlayFabAccountManager _playFabAccountManager;
     [SerializeField] private PhotonManager _photonManager;
-    [SerializeField] private PhotonLobbyManager _lobbyManager;
     [SerializeField] private RoomInfoContainer _roomContainerPrefab;
 
     private List<Button> _buttons = new();
     private List<Canvas> _canvas = new();
     private List<TMP_InputField> _inputFields = new();
+    private List<Toggle> _toggles = new();
     private RoomListController _roomListController;
 
     private void Awake()
@@ -67,7 +74,7 @@ public class UIPresenter : MonoBehaviour
     private void StartRoomListController()
     {
         _roomListController = new RoomListController(_roomListTransform, _roomContainerPrefab);
-        _lobbyManager.OnRoomListUpdated += _roomListController.UpdateRoomList;
+        _photonManager.OnRoomListUpdated += _roomListController.UpdateRoomList;
         foreach (var roomInfoContainer in _roomListController._roomList) roomInfoContainer.OnRoomInfoContainerClick += JoinOutlinedRoom;
     }
 
@@ -77,6 +84,8 @@ public class UIPresenter : MonoBehaviour
         _canvas.Add(_playFabLogInSreenCanvas);
         _canvas.Add(_createAccountMenuCanvas);
         _canvas.Add(_mainMenuCanvas);
+        _canvas.Add(_roomPropertiesCanvas);
+        _canvas.Add(_roomCanvas);
     }
 
     private void OnDisable()
@@ -91,14 +100,18 @@ public class UIPresenter : MonoBehaviour
         SubscribeCreateAccountMenuEvents();
         SubscribePlayFabLoginMenuEvents();
         SubscribePhotonLoginMenuEvents();
+        SubscribeCreateRoomEvents();
+        SubscribeRoomEvents();
     }
 
     private void UnsubscribeEvents()
     {
         foreach (var button in _buttons) button.onClick?.RemoveAllListeners();
         foreach (var inputField in _inputFields) inputField.onValueChanged?.RemoveAllListeners();
-        _lobbyManager.OnRoomListUpdated -= _roomListController.UpdateRoomList;
-        
+        foreach (var toggle in _toggles) toggle.onValueChanged?.RemoveAllListeners();
+        _photonManager.OnRoomListUpdated -= _roomListController.UpdateRoomList;
+        _playFabAccountManager.OnCreateAccountMessageUpdate -= UpdateCreateAccountMessage;
+        _playFabAccountManager.OnLoginMessageUpdate -= UpdateLoginMessage;
     }
 
     private void SubcribeMainMenuEvents()
@@ -111,8 +124,6 @@ public class UIPresenter : MonoBehaviour
 
         _exitButton.onClick.AddListener(Application.Quit);
         _buttons.Add(_exitButton);
-
-        ActivateAllButtons();
     }
 
     private void SubscribeCreateAccountMenuEvents()
@@ -133,9 +144,7 @@ public class UIPresenter : MonoBehaviour
         _backButton.onClick.AddListener(SetMainMenuCanvasActive);
         _buttons.Add(_backButton);
 
-        _playFabAccountManager.CreateAccountMessage += UpdateCreateAccountMessage;
-
-        ActivateAllButtons();
+        _playFabAccountManager.OnCreateAccountMessageUpdate += UpdateCreateAccountMessage;
     }
 
     private void SubscribePlayFabLoginMenuEvents()
@@ -148,15 +157,13 @@ public class UIPresenter : MonoBehaviour
 
         _logInAccountButton.onClick.AddListener(_playFabAccountManager.ConnectPlayFab);
         _logInAccountButton.onClick.AddListener(SetPhotonLogInCanvasActive);
-        _logInAccountButton.onClick.AddListener(_lobbyManager.ConnectPhoton);
+        _logInAccountButton.onClick.AddListener(_photonManager.ConnectPhoton);
         _buttons.Add(_logInAccountButton);
 
         _backToMenuButton.onClick.AddListener(SetMainMenuCanvasActive);
         _buttons.Add(_backToMenuButton);
 
-        _playFabAccountManager.LoginMessage += UpdateLoginMessage;
-
-        ActivateAllButtons();
+        _playFabAccountManager.OnLoginMessageUpdate += UpdateLoginMessage;
     }
 
     private void SubscribePhotonLoginMenuEvents()
@@ -171,47 +178,42 @@ public class UIPresenter : MonoBehaviour
         _buttons.Add(_joinRoomButton);
 
         _backToMainMenuButton.onClick.AddListener(SetMainMenuCanvasActive);
-        _backToMainMenuButton.onClick.AddListener(_lobbyManager.DisconnectPhoton);
+        _backToMainMenuButton.onClick.AddListener(_photonManager.DisconnectPhoton);
         _buttons.Add(_backToMainMenuButton);
+    }
 
+    private void SubscribeCreateRoomEvents()
+    {
         _roomNameInputToCreate.onValueChanged.AddListener(UpdatePhotonRoomname);
-        _inputFields.Add (_roomNameInputToCreate);
+        _inputFields.Add(_roomNameInputToCreate);
 
-        _createRoomInPropertiesButton.onClick.AddListener(_lobbyManager.CreateRoom);
+        _createRoomInPropertiesButton.onClick.AddListener(_photonManager.CreateRoom);
+        _createRoomInPropertiesButton.onClick.AddListener(SetRoomCanvasActive);
         _buttons.Add(_createRoomInPropertiesButton);
 
-        _backToLobbyButton.onClick.AddListener(SetRoomCanvasUnactive);
+        _backToLobbyButton.onClick.AddListener(SetRoomPropertiesCanvasUnactive);
         _buttons.Add(_backToLobbyButton);
 
         _privateRoomToggle.onValueChanged.AddListener(UpdatePrivateRoomToggle);
+        _toggles.Add(_privateRoomToggle);
+    }
 
-        ActivateAllButtons();
+    private void SubscribeRoomEvents()
+    {
+        _startGameButton.onClick.AddListener(_photonManager.StartTheGame);
+        _buttons.Add(_startGameButton);
+
+        _backToLobbyRoomButton.onClick.AddListener(SetPhotonLogInCanvasActive);
+        _buttons.Add(_backToLobbyRoomButton);
     }
 
     private void JoinRoom()
     {
-        if (_roomNameInput.text != string.Empty) _lobbyManager.JoinRoom(new EnterRoomParams()
-        {
-            RoomName = _roomNameInput.text,
-        });
-        else _lobbyManager.JoinRandomRoom();
+        if (_roomNameInput.text != string.Empty) _photonManager.JoinRoom(_roomNameInput.text);
+        else _photonManager.JoinRandomRoom();
     }
 
-    private void JoinOutlinedRoom(RoomInfo enterRoomParams) => _lobbyManager.JoinRoom(new()
-    {
-        RoomName = enterRoomParams.Name,
-        RoomOptions = new()
-        {
-            MaxPlayers = enterRoomParams.MaxPlayers,
-            IsOpen = enterRoomParams.IsOpen,
-            IsVisible = enterRoomParams.IsVisible,
-        }
-    });
-
-    private void ActivateAllButtons()
-    {
-        foreach (var button in _buttons) if (!button.IsInteractable()) button.interactable = true;
-    }
+    private void JoinOutlinedRoom(RoomInfo roomInfo) => _photonManager.JoinRoom(roomInfo);
 
     private void UpdatePlayFabUsername(string username) => _playFabAccountManager.PlayFabUserName = username;
     private void UpdatePlayFabPassword(string password) => _playFabAccountManager.PlayFabPassWord = password;
@@ -219,17 +221,16 @@ public class UIPresenter : MonoBehaviour
     private void UpdateLoginUsername(string username)
     {
         _playFabAccountManager.PlayFabLoginUsername = username;
-        _lobbyManager.PhotonUsername = username;
+        _photonManager.PhotonUsername = username;
     }
     private void UpdatePlayFabLoginPassword(string password) => _playFabAccountManager.PlayFabLoginPassword = password;
 
     private void UpdatePhotonRoomname(string roomname)
     {
-        _lobbyManager.Roomname = roomname;
         _photonManager.Roomname = roomname;
     }
 
-    private void UpdatePrivateRoomToggle(bool toggleIsOn) => _lobbyManager.RoomIsPrivate = _privateRoomToggle.isOn;
+    private void UpdatePrivateRoomToggle(bool toggleIsOn) => _photonManager.RoomIsPrivate = _privateRoomToggle.isOn;
 
     private void SetCanvasActive(Canvas canvasToActivate)
     {
@@ -237,37 +238,37 @@ public class UIPresenter : MonoBehaviour
         canvasToActivate.enabled = true;
     }
 
-    private void SetCanvasActiveSelf(Canvas canvasToActivate) => canvasToActivate.enabled = true;
-
-    private void SetCreateAccountCanvasActive() => SetCanvasActive(_createAccountMenuCanvas);
-
-    private async void SetPlayFabLogInCanvasActive()
+    private void SetCanvasActiveSelf(Canvas canvasToActivate)
     {
-        await Task.Delay(1000);
-        if (_createAccountMessage.color == Color.red) return;
-        if (_createAccountMenuCanvas.enabled == true) await Task.Delay(3000);
-        SetCanvasActive(_playFabLogInSreenCanvas);
+        canvasToActivate.enabled = true;
     }
 
+    private void SetCanvasUnactiveSelf(Canvas canvasToUnactivate) => canvasToUnactivate.enabled = false;
+    private void SetCreateAccountCanvasActive() => SetCanvasActive(_createAccountMenuCanvas);
+    private void SetPlayFabLogInCanvasActive()
+    {
+        if (_createAccountMenuCanvas.enabled == true)
+        {
+            if (_createAccountMessage.color == Color.red) return;
+        }
+        SetCanvasActive(_playFabLogInSreenCanvas);
+    }
     private async void SetPhotonLogInCanvasActive()
     {
         await Task.Run(() => WaitPlayFabLogin());
         SetCanvasActive(_photonLoginScreenCanvas);
     }
-
     private void SetMainMenuCanvasActive() => SetCanvasActive(_mainMenuCanvas);
-
+    private void SetRoomCanvasActive() => SetCanvasActive(_roomCanvas);
     private void SetRoomPropertiesCanvasActive() => SetCanvasActiveSelf(_roomPropertiesCanvas);
-
-    private void SetCanvasUnactive(Canvas canvasToUnactivate) => canvasToUnactivate.enabled = false;
-
-    private void SetRoomCanvasUnactive() => SetCanvasUnactive(_roomPropertiesCanvas);
+    private void SetRoomPropertiesCanvasUnactive() => SetCanvasUnactiveSelf(_roomPropertiesCanvas);
 
     private Task WaitPlayFabLogin()
     {
         while (!PlayFabClientAPI.IsClientLoggedIn()) Task.Delay(100);
         return Task.FromResult(0);
     }
+
     private void UpdateCreateAccountMessage(string message, Color color)
     {
         _createAccountMessage.text = message;

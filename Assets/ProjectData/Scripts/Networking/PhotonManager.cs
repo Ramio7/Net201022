@@ -1,5 +1,7 @@
 using Photon.Pun;
 using Photon.Realtime;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PhotonManager : MonoBehaviourPunCallbacks
@@ -7,8 +9,16 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     [SerializeField] private string _photonUsername;
     [SerializeField] private string _roomname;
 
+    public Action<List<RoomInfo>> OnRoomListUpdated;
+
     public string PhotonUsername { get => _photonUsername; set => _photonUsername = value; }
     public string Roomname { get => _roomname; set => _roomname = value; }
+    public bool RoomIsPrivate { get; set; }
+
+    private void Awake()
+    {
+        DontDestroyOnLoad(this);
+    }
 
     public void ConnectPhoton()
     {
@@ -29,20 +39,21 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     public void DisconnectPhoton()
     {
         PhotonNetwork.Disconnect();
-        //Debug.Log("Disconnected from Photon Network");
     }
 
     public void CreateRoom()
     {
-        PhotonNetwork.CreateRoom(_roomname);
-        //Debug.Log($"{_roomname} succesfully created");
+        PhotonNetwork.CreateRoom(_roomname, new()
+        {
+            IsOpen = true,
+            IsVisible = RoomIsPrivate,
+            MaxPlayers = 4
+        });
     }
 
-    public void JoinRoom()
-    {
-        PhotonNetwork.JoinRoom(_roomname);
-        //Debug.Log($"{_roomname} entered");
-    }
+    public void JoinRoom(RoomInfo roomInfo) => PhotonNetwork.JoinRoom(roomInfo.Name);
+
+    public void JoinRoom(string roomName) => PhotonNetwork.JoinRoom(roomName);
 
     public void JoinRandomRoom()
     {
@@ -54,18 +65,15 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         PhotonNetwork.LeaveRoom();
     }
 
-    public override void OnConnectedToMaster()
+    public void StartTheGame()
     {
-        //Debug.Log("OnConnectedToMaster");
+        PhotonNetwork.CurrentRoom.IsOpen = false;
+        PhotonNetwork.CurrentRoom.IsVisible = false;
+        PhotonNetwork.LoadLevel($"PunBasics-Room for {PhotonNetwork.CurrentRoom.PlayerCount}-edited");
     }
 
-    public override void OnCreatedRoom()
+    public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
-        //Debug.Log("OnCreatedRoom");
-    }
-
-    public override void OnJoinedRoom()
-    {
-       //Debug.Log($"OnJoinedRoom {PhotonNetwork.CurrentRoom.Name}");
+        OnRoomListUpdated.Invoke(roomList);
     }
 }

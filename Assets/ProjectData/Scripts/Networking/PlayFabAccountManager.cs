@@ -19,8 +19,15 @@ public class PlayFabAccountManager : MonoBehaviour
     public string PlayFabLoginUsername { get => _playFabLoginUsername; set => _playFabLoginUsername = value; }
     public string PlayFabLoginPassword { get => _playFabLoginPassword; set => _playFabLoginPassword = value; }
 
-    public event Action<string, Color> CreateAccountMessage;
-    public event Action<string, Color> LoginMessage;
+    public event Action<string, Color> OnCreateAccountMessageUpdate;
+    public event Action<string, Color> OnLoginMessageUpdate;
+
+    public static event Action<float> OnUserHpUpdate;
+
+    private void Awake()
+    {
+        DontDestroyOnLoad(this);
+    }
 
     public void CreatePlayFabAccount()
     {
@@ -33,11 +40,11 @@ public class PlayFabAccountManager : MonoBehaviour
         }, result =>
         {
             Debug.Log($"Success: {_playFabUserName}");
-            CreateAccountMessage.Invoke(result.ToString(), Color.green);
+            OnCreateAccountMessageUpdate.Invoke(result.ToString(), Color.green);
         }, error =>
         {
             Debug.LogError($"Fail: {error.ErrorMessage}");
-            CreateAccountMessage.Invoke(error.ErrorMessage, Color.red);
+            OnCreateAccountMessageUpdate.Invoke(error.ErrorMessage, Color.red);
         });
     }
 
@@ -58,13 +65,44 @@ public class PlayFabAccountManager : MonoBehaviour
             _request,
             result =>
             {
-                Debug.Log(result.PlayFabId);
-                LoginMessage.Invoke($"{result.PlayFabId} connected to PlayFab", Color.green);
+                OnLoginSuccess(result.PlayFabId);
+                OnLoginMessageUpdate.Invoke($"{result.PlayFabId} connected to PlayFab", Color.green);
             },
             error =>
             {
                 Debug.LogError(error.GenerateErrorReport());
-                LoginMessage.Invoke(error.GenerateErrorReport(), Color.red);
+                OnLoginMessageUpdate.Invoke(error.GenerateErrorReport(), Color.red);
+            });
+    }
+
+    private void OnLoginSuccess(string playFabId)
+    {
+        PlayFabClientAPI.UpdateUserData(new()
+        {
+            Data = new()
+            {
+                { "Health", 100.ToString() }
+            }
+        },
+            result =>
+            {
+                PlayFabClientAPI.GetUserData(new()
+                {
+                    PlayFabId = playFabId,
+                },
+                result => 
+                {
+                    if (float.TryParse(result.Data["Health"].Value, out var userHP)) OnUserHpUpdate.Invoke(userHP);
+                    else return;
+                },
+                error => 
+                {
+                    Debug.Log(error.GenerateErrorReport());
+                });
+            },
+            error =>
+            {
+                Debug.Log(error.GenerateErrorReport());
             });
     }
 }
