@@ -1,7 +1,10 @@
 using PlayFab;
 using PlayFab.ClientModels;
+using PlayFab.ServerModels;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
+using CharacterResult = PlayFab.ClientModels.CharacterResult;
 
 public class PlayFabAccountManager : MonoBehaviour
 {
@@ -12,7 +15,9 @@ public class PlayFabAccountManager : MonoBehaviour
     [SerializeField] private string _playFabLoginUsername;
     [SerializeField] private string _playFabLoginPassword;
     private LoginWithPlayFabRequest _request;
+    private string _playFabId;
 
+    public const int Max_User_Characters = 4;
     public string PlayFabUserName { get => _playFabUserName; set => _playFabUserName = value; }
     public string PlayFabPassWord { get => _playFabPassword; set => _playFabPassword = value; }
     public string EMail { get => _playFabEmail; set => _playFabEmail = value; }
@@ -39,13 +44,27 @@ public class PlayFabAccountManager : MonoBehaviour
             RequireBothUsernameAndEmail = true
         }, result =>
         {
+            _playFabId = result.PlayFabId;
             Debug.Log($"Success: {_playFabUserName}");
+            GrantStartingItemsToUser(result);
             OnCreateAccountMessageUpdate.Invoke(result.ToString(), Color.green);
         }, error =>
         {
             Debug.LogError($"Fail: {error.ErrorMessage}");
             OnCreateAccountMessageUpdate.Invoke(error.ErrorMessage, Color.red);
         });
+    }
+
+    private void GrantStartingItemsToUser(RegisterPlayFabUserResult result)
+    {
+        PlayFabServerAPI.GrantItemsToUser(new()
+        {
+            PlayFabId = result.PlayFabId,
+        },
+                    result =>
+                    {
+                        for (int i = 0; i < Max_User_Characters; i++) result.ItemGrantResults.Add(new GrantedItemInstance() { ItemId = "create_character_token" });
+                    }, OnError());
     }
 
     public void ConnectPlayFab()
@@ -77,6 +96,7 @@ public class PlayFabAccountManager : MonoBehaviour
 
     private void OnLoginSuccess(string playFabId)
     {
+        _playFabId = playFabId;
         PlayFabClientAPI.UpdateUserData(new()
         {
             Data = new()
@@ -101,11 +121,26 @@ public class PlayFabAccountManager : MonoBehaviour
             OnError());
     }
 
-    private Action<PlayFabError> OnError()
+    public static Action<PlayFabError> OnError()
     {
         return error =>
         {
             Debug.Log(error.GenerateErrorReport());
         };
+    }
+
+    public List<CharacterResult> GetCharacterList()
+    {
+        List<CharacterResult> characterList = new();
+        PlayFabClientAPI.GetAllUsersCharacters(new()
+        {
+            PlayFabId = _playFabId,
+        },
+        result =>
+        {
+            characterList.AddRange(result.Characters);
+        }, OnError());
+
+        return characterList;
     }
 }

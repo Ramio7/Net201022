@@ -31,6 +31,11 @@ public class UIPresenter : MonoBehaviour
     [SerializeField] private Button _backToMenuButton;
     [SerializeField] private TMP_Text _loginMessage;
 
+    [Header("Character manager screen")]
+    [SerializeField] private Canvas _characterManagerScreenCanvas;
+    [SerializeField] private List<CharacterContainer> _characterContainerList;
+    [SerializeField] private Button _exitToMainMenuButton;
+
     [Header("Photon login screen")]
     [SerializeField] private Canvas _photonLoginScreenCanvas;
     [SerializeField] private TMP_InputField _roomNameInput;
@@ -63,6 +68,7 @@ public class UIPresenter : MonoBehaviour
     private readonly List<Toggle> _toggles = new();
     private RoomListController _roomListController;
 
+    #region Lifecycle Methods
     private void Awake()
     {
         StartRoomListController();
@@ -78,12 +84,6 @@ public class UIPresenter : MonoBehaviour
     {
         _roomListController = new RoomListController(_roomListTransform, _roomContainerPrefab);
         _photonManager.OnRoomListUpdated += UpdateRoomInfoContainers;
-    }
-
-    private void UpdateRoomInfoContainers(List<RoomInfo> roomList)
-    {
-        _roomListController.UpdateRoomList(roomList);
-        foreach (var roomInfoContainer in _roomListController.RoomList) roomInfoContainer.OnRoomInfoContainerClick += JoinOutlinedRoom;
     }
 
     private void RegisterCanvas()
@@ -123,7 +123,9 @@ public class UIPresenter : MonoBehaviour
         _playFabAccountManager.OnCreateAccountMessageUpdate -= UpdateCreateAccountMessage;
         _playFabAccountManager.OnLoginMessageUpdate -= UpdateLoginMessage;
     }
+    #endregion
 
+    #region Event Management Methods
     private void SubcribeMainMenuEvents()
     {
         _createAccountMenuButton.onClick.AddListener(SetCreateAccountCanvasActive);
@@ -216,14 +218,23 @@ public class UIPresenter : MonoBehaviour
         _buttons.Add(_backToLobbyRoomButton);
     }
 
+    private void UpdateRoomInfoContainers(List<RoomInfo> roomList)
+    {
+        _roomListController.UpdateRoomList(roomList);
+        foreach (var roomInfoContainer in _roomListController.RoomList) roomInfoContainer.OnRoomInfoContainerClick += JoinOutlinedRoom;
+    }
+    #endregion
+
+    #region Room Management Methods
     private void JoinRoom()
     {
         if (_roomNameInput.text != string.Empty) _photonManager.JoinRoom(_roomNameInput.text);
         else _photonManager.JoinRandomRoom();
     }
-
     private void JoinOutlinedRoom(RoomInfo roomInfo) => _photonManager.JoinRoom(roomInfo);
+    #endregion
 
+    #region Fields Update Methods
     private void UpdatePlayFabUsername(string username) => _playFabAccountManager.PlayFabUserName = username;
     private void UpdatePlayFabPassword(string password) => _playFabAccountManager.PlayFabPassWord = password;
     private void UpdatePlayFabEmail(string email) => _playFabAccountManager.EMail = email;
@@ -233,25 +244,40 @@ public class UIPresenter : MonoBehaviour
         _photonManager.PhotonUsername = username;
     }
     private void UpdatePlayFabLoginPassword(string password) => _playFabAccountManager.PlayFabLoginPassword = password;
-
     private void UpdatePhotonRoomname(string roomname)
     {
         _photonManager.Roomname = roomname;
     }
-
     private void UpdatePrivateRoomToggle(bool toggleIsOn) => _photonManager.RoomIsPrivate = _privateRoomToggle.isOn;
+    private void UpdateCreateAccountMessage(string message, Color color)
+    {
+        _createAccountMessage.text = message;
+        _createAccountMessage.color = color;
+        Debug.Log(_createAccountMessage.ToString());
+    }
+    private void UpdateLoginMessage(string message, Color color)
+    {
+        _loginMessage.text = message;
+        _loginMessage.color = color;
+        Debug.Log(_loginMessage.ToString());
+    }
+    private void UpdatePhotonClientStateOutput(string state)
+    {
+        _photonLoginMessage.text = state;
+        Debug.Log(state);
+    }
+    #endregion
 
+    #region Canvas Switch Methods
     private void SetCanvasActive(Canvas canvasToActivate)
     {
         foreach (var canvas in _canvas) if (canvas.enabled == true) canvas.enabled = false;
         canvasToActivate.enabled = true;
     }
-
     private void SetCanvasActiveSelf(Canvas canvasToActivate)
     {
         canvasToActivate.enabled = true;
     }
-
     private void SetCanvasUnactiveSelf(Canvas canvasToUnactivate) => canvasToUnactivate.enabled = false;
     private void SetCreateAccountCanvasActive() => SetCanvasActive(_createAccountMenuCanvas);
     private void SetPlayFabLogInCanvasActive()
@@ -271,30 +297,10 @@ public class UIPresenter : MonoBehaviour
     private void SetRoomCanvasActive() => SetCanvasActive(_roomCanvas);
     private void SetRoomPropertiesCanvasActive() => SetCanvasActiveSelf(_roomPropertiesCanvas);
     private void SetRoomPropertiesCanvasUnactive() => SetCanvasUnactiveSelf(_roomPropertiesCanvas);
-
     private Task WaitPlayFabLogin()
     {
         while (!PlayFabClientAPI.IsClientLoggedIn()) Task.Delay(100);
         return Task.FromResult(0);
     }
-
-    private void UpdateCreateAccountMessage(string message, Color color)
-    {
-        _createAccountMessage.text = message;
-        _createAccountMessage.color = color;
-        Debug.Log(_createAccountMessage.ToString());
-    }
-
-    private void UpdateLoginMessage(string message, Color color)
-    {
-        _loginMessage.text = message;
-        _loginMessage.color = color;
-        Debug.Log(_loginMessage.ToString());
-    }
-
-    private void UpdatePhotonClientStateOutput(string state)
-    {
-        _photonLoginMessage.text = state;
-        Debug.Log(state);
-    }
+    #endregion
 }
