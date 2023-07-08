@@ -9,7 +9,8 @@ public class CharacterContainer : MonoBehaviour
     [SerializeField] private TMP_Text _characterLevel;
     [SerializeField] private TMP_Text _characterCurrency;
     [SerializeField] private TMP_Text _createNewCharacter;
-    private CharacterResult _characterInContainer;
+
+    public CharacterResult CharacterInContainer { get; private set; }
 
     public void SetCharacterInfo(CharacterResult characterData)
     {
@@ -20,7 +21,7 @@ public class CharacterContainer : MonoBehaviour
                 bool characterInfo(CharacterResult result) { return result.CharacterId == characterData.CharacterId; }
                 if (characterList.Contains(characterData)) 
                 {
-                    _characterInContainer = characterList.Find(characterInfo);
+                    CharacterInContainer = characterList.Find(characterInfo);
                     SwitchCharacterIsSet(true);
                 }
                 else Debug.LogError("No such character find in account");
@@ -30,7 +31,7 @@ public class CharacterContainer : MonoBehaviour
 
     public CharacterResult GetCharacterInfo()
     {
-        return _characterInContainer;
+        return CharacterInContainer;
     }
 
     private void SwitchCharacterIsSet(bool isSet)

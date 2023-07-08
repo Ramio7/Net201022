@@ -35,6 +35,10 @@ public class UIPresenter : MonoBehaviour
     [SerializeField] private Canvas _characterManagerScreenCanvas;
     [SerializeField] private List<CharacterContainer> _characterContainerList;
     [SerializeField] private Button _exitToMainMenuButton;
+    [SerializeField] private Canvas _createCharacterScreenCanvas;
+    [SerializeField] private TMP_InputField _characterNameInput;
+    [SerializeField] private Button _createCharacterButton;
+    [SerializeField] private Button _cancelCharacterCreation;
 
     [Header("Photon login screen")]
     [SerializeField] private Canvas _photonLoginScreenCanvas;
