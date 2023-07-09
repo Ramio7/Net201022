@@ -9,6 +9,7 @@ public class CharacterListController
     private const float Character_Starting_Health = 100;
     private const int Character_Starting_Level = 1;
     private const int Character_Starting_Currency = 500;
+    private const float Character_Starting_Damage = 0.5f;
 
     public CharacterListController(List<CharacterContainer> characterContainers)
     {
@@ -18,7 +19,13 @@ public class CharacterListController
     public void FillCharacterContainers(List<CharacterResult> characterList)
     {
         if (characterList.Count <= PlayFabAccountManager.Max_User_Characters - 1)
-            for (int i = 0; i < characterList.Count; i++) _list[i].SetCharacterInfo(characterList[i]);
+            for (int i = 0; i < characterList.Count; i++)
+            {
+                if (characterList[i].CharacterId != string.Empty)
+                {
+                    _list[i].SetCharacterInfo(characterList[i]);
+                }
+            }
         else Debug.LogError("To much characters on user account");
     }
 
@@ -28,16 +35,25 @@ public class CharacterListController
         {
             CharacterName = characterName,
             ItemId = "create_character_token",
-            CatalogVersion = "Release"
+            CatalogVersion = "Release",
         },
         result =>
         {
-            result.CustomData = new Dictionary<string, string>() 
+            PlayFabClientAPI.UpdateCharacterData(new()
             {
-                { "Health", Character_Starting_Health.ToString() },
-                { "Level", Character_Starting_Level.ToString() },
-                { "Currency", Character_Starting_Currency.ToString() }
-            };
+                CharacterId = result.CharacterId,
+                Data = new Dictionary<string, string>()
+                {
+                    { "Health", Character_Starting_Health.ToString() },
+                    { "Level", Character_Starting_Level.ToString() },
+                    { "Currency", Character_Starting_Currency.ToString() },
+                    { "Damage", Character_Starting_Damage.ToString() }
+                }
+            },
+            result =>
+            {
+                
+            }, PlayFabAccountManager.OnError());
         }, PlayFabAccountManager.OnError());
     }
 

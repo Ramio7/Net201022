@@ -1,8 +1,11 @@
 using PlayFab;
 using PlayFab.ClientModels;
+using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
+[RequireComponent(typeof(Button))]
 public class CharacterContainer : MonoBehaviour
 {
     [SerializeField] private TMP_Text _characterName;
@@ -11,6 +14,9 @@ public class CharacterContainer : MonoBehaviour
     [SerializeField] private TMP_Text _createNewCharacter;
 
     public CharacterResult CharacterInContainer { get; private set; }
+
+    public event Action<CharacterResult> OnContainerButtonClicked;
+    public event Action<string> OnCharacterNameSend;
 
     public void SetCharacterInfo(CharacterResult characterData)
     {
@@ -29,9 +35,10 @@ public class CharacterContainer : MonoBehaviour
             PlayFabAccountManager.OnError());
     }
 
-    public CharacterResult GetCharacterInfo()
+    public void GetCharacterInfo()
     {
-        return CharacterInContainer;
+        OnContainerButtonClicked.Invoke(CharacterInContainer);
+        OnCharacterNameSend.Invoke(CharacterInContainer.CharacterName);
     }
 
     private void SwitchCharacterIsSet(bool isSet)

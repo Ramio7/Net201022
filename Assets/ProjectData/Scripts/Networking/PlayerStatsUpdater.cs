@@ -3,7 +3,7 @@ using PlayFab;
 using System;
 using UnityEngine;
 
-public class PlayerHealthUpdater : MonoBehaviour
+public class PlayerStatsUpdater : MonoBehaviour
 {
     [SerializeField] PlayerManager _playerManager;
     private string _playFabId;
