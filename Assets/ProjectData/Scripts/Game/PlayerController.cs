@@ -105,7 +105,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
             return;
         }
 
-        if (other.TryGetComponent<Bullet>(out var bullet))
+        if (other.TryGetComponent<BulletDiploma>(out var bullet))
         {
             Health -= bullet.bulletDamage;
         }

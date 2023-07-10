@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-public class Bullet : MonoBehaviour
+public class BulletDiploma : MonoBehaviour
 {
     private const int Bullet_Starting_Force = 10;
 
