@@ -8,6 +8,8 @@ using UnityEngine.UI;
 
 public class UIPresenter : MonoBehaviour
 {
+    public static UIPresenter Instance;
+
     [Header("Main menu")]
     [SerializeField] private Canvas _mainMenuCanvas;
     [SerializeField] private Button _createAccountMenuButton;
@@ -65,6 +67,9 @@ public class UIPresenter : MonoBehaviour
 
     private void Awake()
     {
+        DontDestroyOnLoad(this);
+        Instance = this;
+
         StartRoomListController();
         SubscribeEvents();
         RegisterCanvas();
@@ -253,7 +258,7 @@ public class UIPresenter : MonoBehaviour
     }
 
     private void SetCanvasUnactiveSelf(Canvas canvasToUnactivate) => canvasToUnactivate.enabled = false;
-    private void SetCreateAccountCanvasActive() => SetCanvasActive(_createAccountMenuCanvas);
+    public void SetCreateAccountCanvasActive() => SetCanvasActive(_createAccountMenuCanvas);
     private void SetPlayFabLogInCanvasActive()
     {
         if (_createAccountMenuCanvas.enabled == true)
@@ -271,6 +276,7 @@ public class UIPresenter : MonoBehaviour
     private void SetRoomCanvasActive() => SetCanvasActive(_roomCanvas);
     private void SetRoomPropertiesCanvasActive() => SetCanvasActiveSelf(_roomPropertiesCanvas);
     private void SetRoomPropertiesCanvasUnactive() => SetCanvasUnactiveSelf(_roomPropertiesCanvas);
+    public static void MoveToPhotonLoginCanvas() => Instance.SetPhotonLogInCanvasActive();
 
     private Task WaitPlayFabLogin()
     {
