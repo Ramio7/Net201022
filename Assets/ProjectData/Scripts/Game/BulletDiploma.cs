@@ -3,11 +3,11 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class BulletDiploma : MonoBehaviour
 {
-    private const int Bullet_Starting_Force = 10;
+    private const int Bullet_Starting_Force = 100;
 
-    public readonly float bulletDamage = 1.0f;
+    public readonly float bulletDamage = 10.0f;
 
-    void OnEnable()
+    private void OnEnable()
     {
         GetComponent<Rigidbody>().AddRelativeForce(Vector3.forward * Bullet_Starting_Force);
     }

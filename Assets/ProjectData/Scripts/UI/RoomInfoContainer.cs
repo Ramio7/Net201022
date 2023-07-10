@@ -2,7 +2,9 @@ using Photon.Realtime;
 using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
+[RequireComponent(typeof(Button))]
 public class RoomInfoContainer : MonoBehaviour
 {
     [SerializeField] private TMP_Text _roomInfoText;
@@ -10,6 +12,16 @@ public class RoomInfoContainer : MonoBehaviour
     public RoomInfo ButtonRoomInfo { get; private set; }
 
     public event Action<RoomInfo> OnRoomInfoContainerClick;
+
+    private void OnEnable()
+    {
+        GetComponent<Button>().onClick.AddListener(GetRoomInfo);
+    }
+
+    private void OnDisable()
+    {
+        GetComponent<Button>().onClick.RemoveListener(GetRoomInfo);
+    }
 
     public void SetRoomInfo(RoomInfo roomInfo)
     {
@@ -21,5 +33,10 @@ public class RoomInfoContainer : MonoBehaviour
     {
         ButtonRoomInfo = null;
         _roomInfoText.text = string.Empty;
+    }
+
+    public void GetRoomInfo()
+    {
+        OnRoomInfoContainerClick.Invoke(ButtonRoomInfo);
     }
 }
