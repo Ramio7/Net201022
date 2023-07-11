@@ -348,7 +348,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67418907f25c9644db10c48031ffcab2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Health: 1
+  Health: 100
 --- !u!1 &497734092
 GameObject:
   m_ObjectHideFlags: 0
@@ -641,7 +641,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _playerPrefab: {fileID: 0}
   _levelView: {fileID: 1445040954}
-  _exitGameButton: {fileID: 0}
 --- !u!1 &799685261
 GameObject:
   m_ObjectHideFlags: 0

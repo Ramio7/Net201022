@@ -8,17 +8,12 @@ public class GameController : MonoBehaviourPunCallbacks
 {
     static public GameController Instance;
 
-    private GameObject instance;
-
     [SerializeField] private GameObject _playerPrefab;
     [SerializeField] private LevelView _levelView;
-    [SerializeField] private Button _exitGameButton;
 
     private void Start()
     {
         Instance = this;
-
-        _exitGameButton.onClick.AddListener(ExitGame);
 
         if (!PhotonNetwork.IsConnected)
         {
@@ -42,12 +37,5 @@ public class GameController : MonoBehaviourPunCallbacks
                 Debug.LogFormat("Ignoring scene load for {0}", SceneManagerHelper.ActiveSceneName);
             }
         }
-    }
-
-    private void ExitGame()
-    {
-        PhotonNetwork.LeaveRoom();
-        SceneManager.LoadScene("MenuScene");
-        UIPresenter.MoveToPhotonLoginCanvas();
     }
 }

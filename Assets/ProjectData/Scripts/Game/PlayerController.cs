@@ -5,13 +5,13 @@ using UnityEngine;
 [RequireComponent(typeof(CameraController))]
 public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
 {
+    public bool IsFiring;
+
     public float Health = 100f;
 
     public static GameObject LocalPlayerInstance;
 
     public event Action<float> OnPlayerHpValueChanged;
-
-    bool IsFiring;
 
     public void Awake()
     {
@@ -25,13 +25,13 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
 
     public void Start()
     {
-        CameraController _cameraWork = gameObject.GetComponent<CameraController>();
+        CameraController _cameraController = gameObject.GetComponent<CameraController>();
 
-        if (_cameraWork != null)
+        if (_cameraController != null)
         {
             if (photonView.IsMine)
             {
-                _cameraWork.OnStartFollowing();
+                _cameraController.OnStartFollowing();
             }
         }
         else
@@ -39,7 +39,6 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
             Debug.LogError("Missing CameraController Component on player Prefab.", this);
         }
     }
-
 
     public override void OnDisable()
     {
@@ -63,14 +62,14 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     {
         if (stream.IsWriting)
         {
-            stream.SendNext(this.IsFiring);
-            stream.SendNext(this.Health);
+            stream.SendNext(IsFiring);
+            stream.SendNext(Health);
             UpdatePlayerHp(Health);
         }
         else
         {
-            this.IsFiring = (bool)stream.ReceiveNext();
-            this.Health = (float)stream.ReceiveNext();
+            IsFiring = (bool)stream.ReceiveNext();
+            Health = (float)stream.ReceiveNext();
         }
     }
 

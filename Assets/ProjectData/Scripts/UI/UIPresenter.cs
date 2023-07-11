@@ -276,7 +276,13 @@ public class UIPresenter : MonoBehaviour
     private void SetRoomCanvasActive() => SetCanvasActive(_roomCanvas);
     private void SetRoomPropertiesCanvasActive() => SetCanvasActiveSelf(_roomPropertiesCanvas);
     private void SetRoomPropertiesCanvasUnactive() => SetCanvasUnactiveSelf(_roomPropertiesCanvas);
-    public static void MoveToPhotonLoginCanvas() => Instance.SetPhotonLogInCanvasActive();
+    private void MoveToPhotonLoginCanvas() => Instance.SetPhotonLogInCanvasActive();
+
+    private void ExitGame()
+    {
+        _photonManager.LeaveCurrentRoom();
+        MoveToPhotonLoginCanvas();
+    }
 
     private Task WaitPlayFabLogin()
     {

@@ -3,6 +3,7 @@ using Photon.Realtime;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PhotonManager : MonoBehaviourPunCallbacks
 {
@@ -77,13 +78,14 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     public void LeaveCurrentRoom()
     {
         PhotonNetwork.LeaveRoom();
+        SceneManager.LoadScene("MenuScene");
     }
 
     public void StartTheGame()
     {
         PhotonNetwork.CurrentRoom.IsOpen = false;
         PhotonNetwork.CurrentRoom.IsVisible = false;
-        PhotonNetwork.LoadLevel($"PunBasics-Room for {PhotonNetwork.CurrentRoom.PlayerCount}-edited");
+        PhotonNetwork.LoadLevel("GameMapScene");
     }
 
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
