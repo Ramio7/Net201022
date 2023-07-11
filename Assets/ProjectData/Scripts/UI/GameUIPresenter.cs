@@ -1,7 +1,9 @@
+using Photon.Pun;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+[RequireComponent(typeof(PhotonView))]
 public class GameUIPresenter : MonoBehaviour
 {
     [SerializeField] private GameObject _playerStatisticsPrefab;

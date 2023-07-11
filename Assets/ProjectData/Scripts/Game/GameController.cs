@@ -2,7 +2,6 @@ using Photon.Pun.Demo.PunBasics;
 using Photon.Pun;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 public class GameController : MonoBehaviourPunCallbacks
 {
@@ -11,6 +10,8 @@ public class GameController : MonoBehaviourPunCallbacks
     [SerializeField] private GameObject _playerPrefab;
     [SerializeField] private GameObject _uiPrefab;
     [SerializeField] private LevelView _levelView;
+
+    private GameObject _playerCharacter;
 
     private void Start()
     {
@@ -33,12 +34,33 @@ public class GameController : MonoBehaviourPunCallbacks
 
             if (PlayerManager.LocalPlayerInstance == null)
             {
-                PhotonNetwork.Instantiate(_playerPrefab.name, _levelView.GetSpawnPoint().position, Quaternion.identity, 0);
+                _playerCharacter = PhotonNetwork.Instantiate(_playerPrefab.name, _levelView.GetSpawnPoint().position, Quaternion.identity, 0);
             }
             else
             {
                 Debug.LogFormat("Ignoring scene load for {0}", SceneManagerHelper.ActiveSceneName);
             }
         }
+
+        switch (PhotonNetwork.LocalPlayer.ActorNumber)
+        {
+            case 0:
+                SetPlayerColor(Color.black);
+                break;
+            case 1:
+                SetPlayerColor(Color.cyan);
+                break;
+            case 2:
+                SetPlayerColor(Color.magenta);
+                break;
+            case 3:
+                SetPlayerColor(Color.blue);
+                break;
+        }
+    }
+
+    private void SetPlayerColor(Color color)
+    {
+        _playerCharacter.GetComponent<MeshRenderer>().material.color = color;
     }
 }

@@ -1,15 +1,21 @@
 using Photon.Pun;
 using System;
+using System.Threading.Tasks;
 using UnityEngine;
 
-[RequireComponent(typeof(CameraController))]
+[RequireComponent(typeof(CameraController), typeof(CharacterController))]
 public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
 {
-    public bool IsFiring;
+    [SerializeField] private BulletDiploma _bulletPrefab;
+    [SerializeField] private Transform _bulletSpawnPoint;
 
-    public float Health = 100f;
+
+    public ReactiveProperty<bool> IsFiring = new();
+    public ReactiveProperty<float> Health = new();
+    public ReactiveProperty<int> BulletsCount = new();
 
     public const float MaxHealth = 100f;
+    public const int MaxBullets = 30;
 
     public static GameObject LocalPlayerInstance;
 
@@ -25,8 +31,9 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
         DontDestroyOnLoad(gameObject);
     }
 
-    public void Start()
+    private void Start()
     {
+        IsFiring.OnValueChanged += Fire;
         CameraController _cameraController = gameObject.GetComponent<CameraController>();
 
         if (_cameraController != null)
@@ -40,6 +47,16 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
         {
             Debug.LogError("Missing CameraController Component on player Prefab.", this);
         }
+    }
+
+    private void OnDestroy()
+    {
+        IsFiring.OnValueChanged -= Fire;
+    }
+
+    private void Update()
+    {
+        if (Input.GetKey(KeyCode.Mouse0)) IsFiring.SetValue(true);
     }
 
     public override void OnDisable()
@@ -56,7 +73,8 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
 
         if (other.TryGetComponent<BulletDiploma>(out var bullet))
         {
-            Health -= bullet.bulletDamage;
+            var health = Health.GetValue() - bullet.bulletDamage;
+            Health.SetValue(health);
         }
     }
 
@@ -64,16 +82,37 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     {
         if (stream.IsWriting)
         {
-            stream.SendNext(IsFiring);
-            stream.SendNext(Health);
-            UpdatePlayerHp(Health);
+            stream.SendNext(IsFiring.GetValue());
+            stream.SendNext(Health.GetValue());
         }
         else
         {
-            IsFiring = (bool)stream.ReceiveNext();
-            Health = (float)stream.ReceiveNext();
+            IsFiring.SetValue((bool)stream.ReceiveNext());
+            var playerHealth = (float)stream.ReceiveNext();
+            Health.SetValue(playerHealth);
         }
     }
 
-    private void UpdatePlayerHp(float health) => OnPlayerHpValueChanged?.Invoke(health);
+    private async void Fire(bool isFiring)
+    {
+        if (!isFiring) return;
+
+        while (isFiring)
+        {
+            if (BulletsCount.GetValue() == 0)
+            {
+                await Task.Run(() => WaitReload());
+                BulletsCount.SetValue(MaxBullets);
+            }
+            PhotonNetwork.Instantiate(_bulletPrefab.name, _bulletSpawnPoint.position, Quaternion.identity);
+            var bulletsLeft = BulletsCount.GetValue() - 1;
+            BulletsCount.SetValue(bulletsLeft);
+            await Task.Run(() => FireRateWaiting());
+            IsFiring.SetValue(false);
+        }
+    }
+
+    private Task FireRateWaiting() => Task.Delay(200);
+
+    private Task WaitReload() => Task.Delay(1000);
 }

@@ -8,8 +8,9 @@ public class ReactiveProperty<T>
 
     public void SetValue(T value)
     {
+        if (_value.ToString() == value.ToString()) return;
         _value = value;
-        OnValueChanged.Invoke(value);
+        OnValueChanged?.Invoke(value);
     }
 
     public T GetValue() => _value;
