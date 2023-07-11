@@ -12,6 +12,8 @@ public class PhotonManager : MonoBehaviourPunCallbacks
 
     private ClientState _currentState;
 
+    public static PhotonManager Instance { get; private set; }
+
     public event Action<List<RoomInfo>> OnRoomListUpdated;
     public event Action<string> OnClientStateChanged;
 
@@ -21,6 +23,7 @@ public class PhotonManager : MonoBehaviourPunCallbacks
 
     private void Awake()
     {
+        Instance = this;
         DontDestroyOnLoad(this);
     }
 

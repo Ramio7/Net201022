@@ -9,6 +9,8 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
 
     public float Health = 100f;
 
+    public const float MaxHealth = 100f;
+
     public static GameObject LocalPlayerInstance;
 
     public event Action<float> OnPlayerHpValueChanged;

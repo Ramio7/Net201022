@@ -1,3 +1,4 @@
+using Photon.Pun;
 using Photon.Realtime;
 using PlayFab;
 using System.Collections.Generic;
@@ -278,7 +279,7 @@ public class UIPresenter : MonoBehaviour
     private void SetRoomPropertiesCanvasUnactive() => SetCanvasUnactiveSelf(_roomPropertiesCanvas);
     private void MoveToPhotonLoginCanvas() => Instance.SetPhotonLogInCanvasActive();
 
-    private void ExitGame()
+    public void ExitGame()
     {
         _photonManager.LeaveCurrentRoom();
         MoveToPhotonLoginCanvas();

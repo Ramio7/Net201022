@@ -9,6 +9,7 @@ public class GameController : MonoBehaviourPunCallbacks
     static public GameController Instance;
 
     [SerializeField] private GameObject _playerPrefab;
+    [SerializeField] private GameObject _uiPrefab;
     [SerializeField] private LevelView _levelView;
 
     private void Start()
@@ -28,9 +29,11 @@ public class GameController : MonoBehaviourPunCallbacks
         }
         else
         {
+            PhotonNetwork.Instantiate(_uiPrefab.name, Vector3.zero, Quaternion.identity);
+
             if (PlayerManager.LocalPlayerInstance == null)
             {
-                PhotonNetwork.Instantiate(this._playerPrefab.name, _levelView.GetSpawnPoint().position, Quaternion.identity, 0);
+                PhotonNetwork.Instantiate(_playerPrefab.name, _levelView.GetSpawnPoint().position, Quaternion.identity, 0);
             }
             else
             {
