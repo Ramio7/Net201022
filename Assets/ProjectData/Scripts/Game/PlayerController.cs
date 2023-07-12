@@ -1,25 +1,28 @@
 using Photon.Pun;
+using Photon.Pun.UtilityScripts;
 using System;
 using System.Threading.Tasks;
 using UnityEngine;
 
-[RequireComponent(typeof(CameraController), typeof(CharacterController))]
+[RequireComponent(typeof(CameraController), typeof(CharacterController), typeof(Rigidbody))]
 public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
 {
     [SerializeField] private BulletDiploma _bulletPrefab;
     [SerializeField] private Transform _bulletSpawnPoint;
-
+    [SerializeField] private float _playerSpeed = 100;
+    private const int Max_Bullets = 30;
+    private Rigidbody _rigidbody;
 
     public ReactiveProperty<bool> IsFiring = new();
     public ReactiveProperty<bool> IsDead = new();
     public ReactiveProperty<float> Health = new();
     public ReactiveProperty<int> BulletsCount = new();
-    private const int Max_Bullets = 30;
 
     public static GameObject LocalPlayerInstance;
 
     public event Action<float> OnPlayerHpValueChanged;
     public event Action<int, int> OnPlayerAmmoChanged;
+    public event Action OnPlayerIsDead;
 
     public float Max_Health { get; } = 100f;
 
@@ -29,7 +32,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
         {
             LocalPlayerInstance = gameObject;
         }
-
+        _rigidbody = gameObject.GetComponent<Rigidbody>();
         DontDestroyOnLoad(gameObject);
     }
 
@@ -58,8 +61,25 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
 
     private void Update()
     {
-        if (Input.GetKey(KeyCode.Mouse0)) IsFiring.SetValue(true);
+        if (Input.GetAxis("Fire1") != 0) IsFiring.SetValue(true);
         else IsFiring.SetValue(false);
+
+        var axisVertical = Input.GetAxis("Vertical");
+        if (axisVertical != 0) Move(axisVertical);
+
+        var axisHorizontal = Input.GetAxis("Horizontal");
+        if (axisHorizontal != 0) Strafe(axisHorizontal);
+    }
+
+    private void Strafe(float axisHorizontal)
+    {
+        if (axisHorizontal < 0) _rigidbody.AddForce(axisHorizontal * _playerSpeed * Time.deltaTime * Vector3.left, ForceMode.VelocityChange);
+        else if (axisHorizontal > 0) _rigidbody.AddForce(axisHorizontal * _playerSpeed * Time.deltaTime * Vector3.right, ForceMode.VelocityChange);
+    }
+
+    private void Move(float axisVertical)
+    {
+        _rigidbody.AddForce(axisVertical * _playerSpeed * Time.deltaTime * Vector3.forward, ForceMode.VelocityChange);
     }
 
     public override void OnDisable()
@@ -78,14 +98,6 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
         {
             HealthCheck(bullet);
         }
-    }
-
-    private void HealthCheck(BulletDiploma bullet)
-    {
-        var health = Health.GetValue() - bullet.bulletDamage;
-        Health.SetValue(health);
-        if (Health.GetValue() <= 0) gameObject.SetActive(false);
-
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -115,6 +127,14 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
             return;
         }
         await StartBullet();
+    }
+
+    private void HealthCheck(BulletDiploma bullet)
+    {
+        var health = Health.GetValue() - bullet.bulletDamage;
+        Health.SetValue(health);
+        if (Health.GetValue() <= 0) gameObject.SetActive(false);
+        OnPlayerIsDead?.Invoke();
     }
 
     private async Task Reload()

@@ -1,5 +1,5 @@
 using Photon.Pun;
-using Photon.Realtime;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -45,6 +45,7 @@ public class GameController : MonoBehaviourPunCallbacks
                 _gameUIPresenter.PlayerMaxHP = _playerController.Max_Health;
                 _playerController.OnPlayerHpValueChanged += _gameUIPresenter.SetPlayerHPSlider;
                 _playerController.OnPlayerAmmoChanged += _gameUIPresenter.SetBulletsCounter;
+                _playerController.OnPlayerIsDead += RevivePlayer;
             }
             else
             {
@@ -74,13 +75,19 @@ public class GameController : MonoBehaviourPunCallbacks
         _levelView.OnSpawnPointGranted -= SetPlayerSpawnPosition;
         _playerController.OnPlayerHpValueChanged -= _gameUIPresenter.SetPlayerHPSlider;
         _playerController.OnPlayerAmmoChanged -= _gameUIPresenter.SetBulletsCounter;
+        _playerController.OnPlayerIsDead -= RevivePlayer;
         base.OnDisable();
     }
 
-    private void SetPlayerColor(Color color)
-    {
-        _playerCharacter.GetComponent<MeshRenderer>().material.color = color;
-    }
+    private void SetPlayerColor(Color color) => _playerCharacter.GetComponent<MeshRenderer>().material.color = color;
 
     private void SetPlayerSpawnPosition(Vector3 position) => _playerSpawnPosition = position;
+
+    private async void RevivePlayer()
+    {
+        await Task.Delay(5000);
+        _levelView.GetSpawnPoint();
+        _playerCharacter.transform.SetPositionAndRotation(_playerSpawnPosition, Quaternion.identity);
+        _playerCharacter.SetActive(true);
+    }
 }

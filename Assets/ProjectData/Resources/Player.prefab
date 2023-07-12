@@ -242,6 +242,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _bulletPrefab: {fileID: 2957600214848022645, guid: 7b3f0c247f4bbbb48ae1a659c121cf93, type: 3}
   _bulletSpawnPoint: {fileID: 6350907934795031777}
+  _playerSpeed: 0
 --- !u!114 &4357022660461199139
 MonoBehaviour:
   m_ObjectHideFlags: 0
