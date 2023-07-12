@@ -24,11 +24,6 @@ public class PlayFabAccountManager : MonoBehaviour
 
     public static event Action<float, string> OnUserHpUpdate;
 
-    private void Awake()
-    {
-        DontDestroyOnLoad(this);
-    }
-
     public void CreatePlayFabAccount()
     {
         PlayFabClientAPI.RegisterPlayFabUser(new RegisterPlayFabUserRequest

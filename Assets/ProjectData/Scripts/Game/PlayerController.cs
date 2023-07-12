@@ -11,15 +11,17 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
 
 
     public ReactiveProperty<bool> IsFiring = new();
+    public ReactiveProperty<bool> IsDead = new();
     public ReactiveProperty<float> Health = new();
     public ReactiveProperty<int> BulletsCount = new();
-
-    public const float MaxHealth = 100f;
-    public const int MaxBullets = 30;
+    private const int Max_Bullets = 30;
 
     public static GameObject LocalPlayerInstance;
 
     public event Action<float> OnPlayerHpValueChanged;
+    public event Action<int, int> OnPlayerAmmoChanged;
+
+    public float Max_Health { get; } = 100f;
 
     public void Awake()
     {
@@ -57,6 +59,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     private void Update()
     {
         if (Input.GetKey(KeyCode.Mouse0)) IsFiring.SetValue(true);
+        else IsFiring.SetValue(false);
     }
 
     public override void OnDisable()
@@ -73,9 +76,16 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
 
         if (other.TryGetComponent<BulletDiploma>(out var bullet))
         {
-            var health = Health.GetValue() - bullet.bulletDamage;
-            Health.SetValue(health);
+            HealthCheck(bullet);
         }
+    }
+
+    private void HealthCheck(BulletDiploma bullet)
+    {
+        var health = Health.GetValue() - bullet.bulletDamage;
+        Health.SetValue(health);
+        if (Health.GetValue() <= 0) gameObject.SetActive(false);
+
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -84,10 +94,12 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
         {
             stream.SendNext(IsFiring.GetValue());
             stream.SendNext(Health.GetValue());
+            stream.SendNext(IsDead.GetValue());
         }
         else
         {
             IsFiring.SetValue((bool)stream.ReceiveNext());
+            IsDead.SetValue((bool)stream.ReceiveNext());
             var playerHealth = (float)stream.ReceiveNext();
             Health.SetValue(playerHealth);
         }
@@ -97,19 +109,29 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     {
         if (!isFiring) return;
 
-        while (isFiring)
+        if (BulletsCount.GetValue() == 0)
         {
-            if (BulletsCount.GetValue() == 0)
-            {
-                await Task.Run(() => WaitReload());
-                BulletsCount.SetValue(MaxBullets);
-            }
-            PhotonNetwork.Instantiate(_bulletPrefab.name, _bulletSpawnPoint.position, Quaternion.identity);
-            var bulletsLeft = BulletsCount.GetValue() - 1;
-            BulletsCount.SetValue(bulletsLeft);
-            await Task.Run(() => FireRateWaiting());
-            IsFiring.SetValue(false);
+            await Reload();
+            return;
         }
+        await StartBullet();
+    }
+
+    private async Task Reload()
+    {
+        await Task.Run(() => WaitReload());
+        BulletsCount.SetValue(Max_Bullets);
+        IsFiring.SetValue(false);
+    }
+
+    private async Task StartBullet()
+    {
+        PhotonNetwork.Instantiate(_bulletPrefab.name, _bulletSpawnPoint.position, Quaternion.identity);
+        var bulletsLeft = BulletsCount.GetValue() - 1;
+        BulletsCount.SetValue(bulletsLeft);
+        OnPlayerAmmoChanged?.Invoke(bulletsLeft, Max_Bullets);
+        await Task.Run(() => FireRateWaiting());
+        IsFiring.SetValue(false);
     }
 
     private Task FireRateWaiting() => Task.Delay(200);

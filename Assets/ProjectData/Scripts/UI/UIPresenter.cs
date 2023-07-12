@@ -9,8 +9,6 @@ using UnityEngine.UI;
 
 public class UIPresenter : MonoBehaviour
 {
-    public static UIPresenter Instance;
-
     [Header("Main menu")]
     [SerializeField] private Canvas _mainMenuCanvas;
     [SerializeField] private Button _createAccountMenuButton;
@@ -68,13 +66,11 @@ public class UIPresenter : MonoBehaviour
 
     private void Awake()
     {
-        DontDestroyOnLoad(this);
-        Instance = this;
-
         StartRoomListController();
         SubscribeEvents();
         RegisterCanvas();
-        SetMainMenuCanvasActive();
+        if (PhotonNetwork.IsConnected) SetPhotonLogInCanvasActive();
+        else SetMainMenuCanvasActive();
 
         _playFabAccountManager.OnCreateAccountMessageUpdate += UpdateCreateAccountMessage;
         _playFabAccountManager.OnLoginMessageUpdate += UpdateLoginMessage;
@@ -274,20 +270,24 @@ public class UIPresenter : MonoBehaviour
         SetCanvasActive(_photonLoginScreenCanvas);
     }
     private void SetMainMenuCanvasActive() => SetCanvasActive(_mainMenuCanvas);
-    private void SetRoomCanvasActive() => SetCanvasActive(_roomCanvas);
+    private async void SetRoomCanvasActive()
+    {
+        await Task.Run(() => WaitRoomJoin());
+        SetCanvasActive(_roomCanvas);
+    }
+
     private void SetRoomPropertiesCanvasActive() => SetCanvasActiveSelf(_roomPropertiesCanvas);
     private void SetRoomPropertiesCanvasUnactive() => SetCanvasUnactiveSelf(_roomPropertiesCanvas);
-    private void MoveToPhotonLoginCanvas() => Instance.SetPhotonLogInCanvasActive();
-
-    public void ExitGame()
-    {
-        _photonManager.LeaveCurrentRoom();
-        MoveToPhotonLoginCanvas();
-    }
 
     private Task WaitPlayFabLogin()
     {
         while (!PlayFabClientAPI.IsClientLoggedIn()) Task.Delay(100);
+        return Task.FromResult(0);
+    }
+
+    private Task WaitRoomJoin()
+    {
+        while (!PhotonNetwork.InRoom) Task.Delay(100);
         return Task.FromResult(0);
     }
 

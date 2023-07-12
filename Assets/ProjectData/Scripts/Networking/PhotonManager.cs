@@ -16,6 +16,7 @@ public class PhotonManager : MonoBehaviourPunCallbacks
 
     public event Action<List<RoomInfo>> OnRoomListUpdated;
     public event Action<string> OnClientStateChanged;
+    public event Action OnRoomLeft;
 
     public string PhotonUsername { get => _photonUsername; set => _photonUsername = value; }
     public string Roomname { get => _roomname; set => _roomname = value; }
@@ -23,8 +24,11 @@ public class PhotonManager : MonoBehaviourPunCallbacks
 
     private void Awake()
     {
-        Instance = this;
-        DontDestroyOnLoad(this);
+        if (PhotonNetwork.IsConnected)
+        {
+            var player = PhotonNetwork.LocalPlayer;
+            PhotonUsername = player.NickName;
+        }
     }
 
     private void Update()
@@ -82,6 +86,7 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     {
         PhotonNetwork.LeaveRoom();
         SceneManager.LoadScene("MenuScene");
+        OnRoomLeft?.Invoke();
     }
 
     public void StartTheGame()
