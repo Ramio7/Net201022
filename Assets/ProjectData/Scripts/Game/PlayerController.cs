@@ -3,7 +3,7 @@ using System;
 using System.Threading.Tasks;
 using UnityEngine;
 
-[RequireComponent(typeof(CharacterController), typeof(Rigidbody))]
+[RequireComponent(/*typeof(CharacterController),*/ typeof(Rigidbody))]
 public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
 {
     [SerializeField] private BulletDiploma _bulletPrefab;
@@ -13,6 +13,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     private Rigidbody _rigidbody;
     private float _axisVertical;
     private float _axisHorizontal;
+    private float _scroll;
 
     public ReactiveProperty<bool> IsFiring = new();
     public ReactiveProperty<bool> IsDead = new();
@@ -64,23 +65,30 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
         if (Input.GetKey(KeyCode.A)) _axisHorizontal = -1;
         else if (Input.GetKey(KeyCode.D)) _axisHorizontal = 1;
         else _axisHorizontal = 0;
+
+        _scroll = Input.GetAxis("Mouse X");
     }
 
     private void FixedUpdate()
     {
         if (_axisVertical != 0) Move(_axisVertical);
         if (_axisHorizontal != 0) Strafe(_axisHorizontal);
+        if (_scroll != 0.0f) RotateCharacter(_scroll);
     }
 
     private void Move(float axisVertical)
     {
-        _rigidbody.AddForce(axisVertical * _playerSpeed * Vector3.forward, ForceMode.VelocityChange);
+        _rigidbody.AddForce(axisVertical * _playerSpeed * Time.deltaTime * Vector3.forward, ForceMode.VelocityChange);
     }
 
     private void Strafe(float axisHorizontal)
     {
-        if (axisHorizontal < 0) _rigidbody.AddForce(axisHorizontal * _playerSpeed * Vector3.left, ForceMode.VelocityChange);
-        else if (axisHorizontal > 0) _rigidbody.AddForce(axisHorizontal * _playerSpeed * Vector3.right, ForceMode.VelocityChange);
+        _rigidbody.AddForce(axisHorizontal * _playerSpeed * Time.deltaTime * Vector3.right, ForceMode.VelocityChange);
+    }
+
+    private void RotateCharacter(float scroll)
+    {
+        transform.Rotate(Vector3.up, scroll);
     }
 
     public override void OnDisable()
@@ -133,6 +141,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     private void HealthCheck(BulletDiploma bullet)
     {
         var health = Health.GetValue() - bullet.bulletDamage;
+        OnPlayerHpValueChanged?.Invoke(health);
         Health.SetValue(health);
         if (Health.GetValue() <= 0) gameObject.SetActive(false);
         OnPlayerIsDead?.Invoke();

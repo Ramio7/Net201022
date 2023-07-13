@@ -69,9 +69,9 @@ public class GameController : MonoBehaviourPunCallbacks
     public override void OnDisable()
     {
         _levelView.OnSpawnPointGranted -= SetPlayerSpawnPosition;
-        _playerController.OnPlayerHpValueChanged -= _gameUIPresenter.SetPlayerHPSlider;
-        _playerController.OnPlayerAmmoChanged -= _gameUIPresenter.SetBulletsCounter;
-        _playerController.OnPlayerIsDead -= RevivePlayer;
+        //_playerController.OnPlayerHpValueChanged -= _gameUIPresenter.SetPlayerHPSlider;
+        //_playerController.OnPlayerAmmoChanged -= _gameUIPresenter.SetBulletsCounter;
+        //_playerController.OnPlayerIsDead -= RevivePlayer;
         base.OnDisable();
     }
 
