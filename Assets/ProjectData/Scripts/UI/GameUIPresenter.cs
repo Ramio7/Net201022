@@ -51,7 +51,7 @@ public class GameUIPresenter : MonoBehaviour
     }
 
     public void SetPlayerHPSlider(float hp) => _playerHp.value = hp / PlayerMaxHP;
-    public void SetBulletsCounter(int bulletCount, int maxBullets) => _ammoCounter.text = $"Ammo: ${bulletCount} / {maxBullets}";
+    public void SetBulletsCounter(int bulletCount, int maxBullets) => _ammoCounter.text = $"Ammo: {bulletCount} / {maxBullets}";
 
     private void SetExitCanvasActiveSelf() => _exitGameCanvas.enabled = true;
     private void SetExitCanvasUnactiveSelf() => _exitGameCanvas.enabled = false;

@@ -40,12 +40,8 @@ public class GameController : MonoBehaviourPunCallbacks
 
             if (_playerCharacter == null)
             {
-                _playerCharacter = PhotonNetwork.Instantiate(_playerPrefab.name, _playerSpawnPosition, Quaternion.identity, 0);
-                _playerCharacter.TryGetComponent(out PlayerController _playerController);
-                _gameUIPresenter.PlayerMaxHP = _playerController.Max_Health;
-                _playerController.OnPlayerHpValueChanged += _gameUIPresenter.SetPlayerHPSlider;
-                _playerController.OnPlayerAmmoChanged += _gameUIPresenter.SetBulletsCounter;
-                _playerController.OnPlayerIsDead += RevivePlayer;
+                _playerController = InstantiatePlayerCharacter(_gameUIPresenter);
+                SetPlayerBulletsMaximum(_gameUIPresenter, _playerController);
             }
             else
             {
@@ -79,6 +75,17 @@ public class GameController : MonoBehaviourPunCallbacks
         base.OnDisable();
     }
 
+    private PlayerController InstantiatePlayerCharacter(GameUIPresenter _gameUIPresenter)
+    {
+        _playerCharacter = PhotonNetwork.Instantiate(_playerPrefab.name, _playerSpawnPosition, Quaternion.identity, 0);
+        _playerCharacter.TryGetComponent(out PlayerController _playerController);
+        _gameUIPresenter.PlayerMaxHP = _playerController.Max_Health;
+        _playerController.OnPlayerHpValueChanged += _gameUIPresenter.SetPlayerHPSlider;
+        _playerController.OnPlayerAmmoChanged += _gameUIPresenter.SetBulletsCounter;
+        _playerController.OnPlayerIsDead += RevivePlayer;
+        return _playerController;
+    }
+
     private void SetPlayerColor(Color color) => _playerCharacter.GetComponent<MeshRenderer>().material.color = color;
 
     private void SetPlayerSpawnPosition(Vector3 position) => _playerSpawnPosition = position;
@@ -88,6 +95,12 @@ public class GameController : MonoBehaviourPunCallbacks
         await Task.Delay(5000);
         _levelView.GetSpawnPoint();
         _playerCharacter.transform.SetPositionAndRotation(_playerSpawnPosition, Quaternion.identity);
+
         _playerCharacter.SetActive(true);
+    }
+
+    private static void SetPlayerBulletsMaximum(GameUIPresenter _gameUIPresenter, PlayerController _playerController)
+    {
+        _gameUIPresenter.SetBulletsCounter(_playerController.Max_Bullets, _playerController.Max_Bullets);
     }
 }

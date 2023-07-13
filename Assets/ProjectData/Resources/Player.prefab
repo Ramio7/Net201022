@@ -49,7 +49,6 @@ GameObject:
   - component: {fileID: 4357022660461199197}
   - component: {fileID: 4357022660461199138}
   - component: {fileID: 4357022660461199136}
-  - component: {fileID: 4357022660461199139}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -70,6 +69,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6350907934795031777}
+  - {fileID: 1720768051687848812}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -242,21 +242,36 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _bulletPrefab: {fileID: 2957600214848022645, guid: 7b3f0c247f4bbbb48ae1a659c121cf93, type: 3}
   _bulletSpawnPoint: {fileID: 6350907934795031777}
-  _playerSpeed: 0
---- !u!114 &4357022660461199139
-MonoBehaviour:
+  _cameraTransform: {fileID: 1720768051687848812}
+  _playerSpeed: 5
+--- !u!1 &6656635229011800843
+GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4357022660461199189}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 195d7103a25c3c844841a7a891b34fd4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  distance: 7
-  height: 3
-  centerOffset: {x: 0, y: 0, z: 0}
-  followOnStart: 0
-  smoothSpeed: 0.125
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1720768051687848812}
+  m_Layer: 0
+  m_Name: CameraTransfrom
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1720768051687848812
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6656635229011800843}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.007, z: -1.494}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4357022660461199196}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

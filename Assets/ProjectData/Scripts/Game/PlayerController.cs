@@ -1,17 +1,18 @@
 using Photon.Pun;
-using Photon.Pun.UtilityScripts;
 using System;
 using System.Threading.Tasks;
 using UnityEngine;
 
-[RequireComponent(typeof(CameraController), typeof(CharacterController), typeof(Rigidbody))]
+[RequireComponent(typeof(CharacterController), typeof(Rigidbody))]
 public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
 {
     [SerializeField] private BulletDiploma _bulletPrefab;
     [SerializeField] private Transform _bulletSpawnPoint;
-    [SerializeField] private float _playerSpeed = 100;
-    private const int Max_Bullets = 30;
+    [SerializeField] private Transform _cameraTransform;
+    [SerializeField] private float _playerSpeed;
     private Rigidbody _rigidbody;
+    private float _axisVertical;
+    private float _axisHorizontal;
 
     public ReactiveProperty<bool> IsFiring = new();
     public ReactiveProperty<bool> IsDead = new();
@@ -25,6 +26,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     public event Action OnPlayerIsDead;
 
     public float Max_Health { get; } = 100f;
+    public int Max_Bullets { get; } = 30;
 
     public void Awake()
     {
@@ -38,20 +40,11 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
 
     private void Start()
     {
-        IsFiring.OnValueChanged += Fire;
-        CameraController _cameraController = gameObject.GetComponent<CameraController>();
+        if (!photonView.IsMine && !PhotonNetwork.IsConnected) return;
 
-        if (_cameraController != null)
-        {
-            if (photonView.IsMine)
-            {
-                _cameraController.OnStartFollowing();
-            }
-        }
-        else
-        {
-            Debug.LogError("Missing CameraController Component on player Prefab.", this);
-        }
+        IsFiring.OnValueChanged += Fire;
+
+        Camera.main.transform.SetPositionAndRotation(_cameraTransform.position, _cameraTransform.rotation);
     }
 
     private void OnDestroy()
@@ -61,25 +54,33 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
 
     private void Update()
     {
-        if (Input.GetAxis("Fire1") != 0) IsFiring.SetValue(true);
+        if (Input.GetMouseButton(0)) IsFiring.SetValue(true);
         else IsFiring.SetValue(false);
 
-        var axisVertical = Input.GetAxis("Vertical");
-        if (axisVertical != 0) Move(axisVertical);
+        if (Input.GetKey(KeyCode.W)) _axisVertical = 1;
+        else if (Input.GetKey(KeyCode.S)) _axisVertical = -1;
+        else _axisVertical = 0;
 
-        var axisHorizontal = Input.GetAxis("Horizontal");
-        if (axisHorizontal != 0) Strafe(axisHorizontal);
+        if (Input.GetKey(KeyCode.A)) _axisHorizontal = -1;
+        else if (Input.GetKey(KeyCode.D)) _axisHorizontal = 1;
+        else _axisHorizontal = 0;
     }
 
-    private void Strafe(float axisHorizontal)
+    private void FixedUpdate()
     {
-        if (axisHorizontal < 0) _rigidbody.AddForce(axisHorizontal * _playerSpeed * Time.deltaTime * Vector3.left, ForceMode.VelocityChange);
-        else if (axisHorizontal > 0) _rigidbody.AddForce(axisHorizontal * _playerSpeed * Time.deltaTime * Vector3.right, ForceMode.VelocityChange);
+        if (_axisVertical != 0) Move(_axisVertical);
+        if (_axisHorizontal != 0) Strafe(_axisHorizontal);
     }
 
     private void Move(float axisVertical)
     {
-        _rigidbody.AddForce(axisVertical * _playerSpeed * Time.deltaTime * Vector3.forward, ForceMode.VelocityChange);
+        _rigidbody.AddForce(axisVertical * _playerSpeed * Vector3.forward, ForceMode.VelocityChange);
+    }
+
+    private void Strafe(float axisHorizontal)
+    {
+        if (axisHorizontal < 0) _rigidbody.AddForce(axisHorizontal * _playerSpeed * Vector3.left, ForceMode.VelocityChange);
+        else if (axisHorizontal > 0) _rigidbody.AddForce(axisHorizontal * _playerSpeed * Vector3.right, ForceMode.VelocityChange);
     }
 
     public override void OnDisable()
