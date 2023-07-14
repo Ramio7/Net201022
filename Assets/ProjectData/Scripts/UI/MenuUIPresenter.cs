@@ -53,6 +53,7 @@ public class MenuUIPresenter : MonoBehaviour
     [SerializeField] private Canvas _roomCanvas;
     [SerializeField] private Button _startGameButton;
     [SerializeField] private Button _backToLobbyRoomButton;
+    [SerializeField] private TMP_Text _playerList;
 
     [Header("Utility")]
     [SerializeField] private PlayFabAccountManager _playFabAccountManager;
@@ -65,6 +66,7 @@ public class MenuUIPresenter : MonoBehaviour
     private readonly List<TMP_InputField> _inputFields = new();
     private readonly List<Toggle> _toggles = new();
     private RoomListController _roomListController;
+    private PlayerInRoomListController _playerInRoomListController;
 
     private void Awake()
     {
@@ -115,6 +117,7 @@ public class MenuUIPresenter : MonoBehaviour
     {
         if (_photonManager != null && _playFabAccountManager != null) UnsubscribeEvents();
         _roomListController?.Dispose();
+        _playerInRoomListController?.Dispose();
     }
 
     private void SubscribeEvents()
@@ -180,7 +183,6 @@ public class MenuUIPresenter : MonoBehaviour
 
         _logInAccountButton.onClick.AddListener(_playFabAccountManager.ConnectPlayFab);
         _logInAccountButton.onClick.AddListener(SetPhotonLogInCanvasActive);
-        _logInAccountButton.onClick.AddListener(_photonManager.ConnectPhoton);
         _buttons.Add(_logInAccountButton);
 
         _backToMenuButton.onClick.AddListener(SetMainMenuCanvasActive);
@@ -196,6 +198,7 @@ public class MenuUIPresenter : MonoBehaviour
         _buttons.Add(_createRoomButton);
 
         _joinRoomButton.onClick.AddListener(JoinRoom);
+        _joinRoomButton.onClick.AddListener(SetRoomCanvasActive);
         _buttons.Add(_joinRoomButton);
 
         _photonManager.OnClientStateChanged += UpdatePhotonClientStateOutput;
@@ -238,9 +241,14 @@ public class MenuUIPresenter : MonoBehaviour
     {
         if (_roomNameInput.text != string.Empty) _photonManager.JoinRoom(_roomNameInput.text);
         else _photonManager.JoinRandomRoom();
+        SetRoomCanvasActive();
     }
 
-    private void JoinOutlinedRoom(RoomInfo roomInfo) => _photonManager.JoinRoom(roomInfo);
+    private void JoinOutlinedRoom(RoomInfo roomInfo)
+    {
+        _photonManager.JoinRoom(roomInfo);
+        SetRoomCanvasActive();
+    }
 
     private void UpdatePlayFabUsername(string username) => _playFabAccountManager.PlayFabUserName = username;
     private void UpdatePlayFabPassword(string password) => _playFabAccountManager.PlayFabPassWord = password;
@@ -265,11 +273,7 @@ public class MenuUIPresenter : MonoBehaviour
         canvasToActivate.enabled = true;
     }
 
-    private void SetCanvasActiveSelf(Canvas canvasToActivate)
-    {
-        canvasToActivate.enabled = true;
-    }
-
+    private void SetCanvasActiveSelf(Canvas canvasToActivate) => canvasToActivate.enabled = true;
     private void SetCanvasUnactiveSelf(Canvas canvasToUnactivate) => canvasToUnactivate.enabled = false;
     public void SetCreateAccountCanvasActive() => SetCanvasActive(_createAccountMenuCanvas);
     private void SetPlayFabLogInCanvasActive()
@@ -277,7 +281,6 @@ public class MenuUIPresenter : MonoBehaviour
         if (PlayFabClientAPI.IsClientLoggedIn())
         {
             SetPhotonLogInCanvasActive();
-            _photonManager.ConnectPhoton();
             return;
         }
 
@@ -289,7 +292,9 @@ public class MenuUIPresenter : MonoBehaviour
     }
     private async void SetPhotonLogInCanvasActive()
     {
+        if (!PlayFabClientAPI.IsClientLoggedIn()) return;
         await Task.Run(() => WaitPlayFabLogin());
+        _photonManager.ConnectPhoton();
         await Task.Run(() => WaitPhotonLogin());
         SetCanvasActive(_photonLoginScreenCanvas);
     }
@@ -297,7 +302,10 @@ public class MenuUIPresenter : MonoBehaviour
     private async void SetRoomCanvasActive()
     {
         await Task.Run(() => WaitRoomJoin());
+        var players = PhotonNetwork.CurrentRoom.Players;
+        _playerInRoomListController = new(players, _playerList);
         SetCanvasActive(_roomCanvas);
+        if (!PhotonNetwork.IsMasterClient) _startGameButton.interactable = false;
     }
 
     private void SetRoomPropertiesCanvasActive() => SetCanvasActiveSelf(_roomPropertiesCanvas);

@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: PhotonServerSettings
   m_EditorClassIdentifier: 
   AppSettings:
-    AppIdRealtime: 3df8b41a-2969-4707-bbf8-ad50cc99dca7
+    AppIdRealtime: bd940206-5d41-4938-9ddb-8ab643eac8ff
     AppIdFusion: 
     AppIdChat: 
     AppIdVoice: 
-    AppVersion: dev
+    AppVersion: 
     UseNameServer: 1
     FixedRegion: ru
     Server: 
@@ -27,9 +27,9 @@ MonoBehaviour:
     EnableProtocolFallback: 1
     AuthMode: 0
     EnableLobbyStatistics: 0
-    NetworkLogging: 5
-  DevRegion: ru
-  PunLogging: 2
+    NetworkLogging: 1
+  DevRegion: 
+  PunLogging: 0
   EnableSupportLogger: 0
   RunInBackground: 1
   StartInOfflineMode: 0
@@ -41,4 +41,4 @@ MonoBehaviour:
   - RespawnSpaceship
   DisableAutoOpenWizard: 1
   ShowSettings: 1
-  DevRegionSetOnce: 1
+  DevRegionSetOnce: 0

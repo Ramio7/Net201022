@@ -1,7 +1,6 @@
 using Photon.Pun;
 using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(PhotonView))]
@@ -17,18 +16,26 @@ public class GameUIPresenter : MonoBehaviour
     [SerializeField] private Canvas _exitGameCanvas;
     [SerializeField] private Button _yesButton;
     [SerializeField] private Button _noButton;
+    [SerializeField] private Transform _playerStatisticsParent;
 
-    public float PlayerMaxHP;
+    private GameStatisticsPanelController _statisticsController;
+    private MatchController _matchController;
+
+    public float playerMaxHP;
+    public GameStatisticsPanelController StatisticsController { get => _statisticsController; set => _statisticsController = value; }
 
     private void Start()
     {
+        StartGameStatistics();
         HideMouseCursor();
         SubscribeEvents();
     }
 
     private void OnDisable()
     {
+        ShowMouseCursor();
         UnsubscribeEvents();
+        _statisticsController.Dispose();
     }
 
     private void Update()
@@ -37,6 +44,12 @@ public class GameUIPresenter : MonoBehaviour
 
         if (Input.GetKey(KeyCode.Tab)) SetStatisticsCanvasActiveSelf();
         else SetStatisticsCanvasUnactiveSelf();
+    }
+
+    private void StartGameStatistics()
+    {
+        var players = PhotonNetwork.CurrentRoom.Players;
+        _statisticsController = new GameStatisticsPanelController(_playerStatisticsPrefab, _playerStatisticsParent, players);
     }
 
     private void SubscribeEvents()
@@ -63,7 +76,7 @@ public class GameUIPresenter : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
     }
 
-    public void SetPlayerHPSlider(float hp) => _playerHp.value = hp / PlayerMaxHP;
+    public void SetPlayerHPSlider(float hp) => _playerHp.value = hp / playerMaxHP;
     public void SetBulletsCounter(int bulletCount, int maxBullets) => _ammoCounter.text = $"Ammo: {bulletCount} / {maxBullets}";
 
     private void SetExitCanvasActiveSelf()
@@ -83,6 +96,5 @@ public class GameUIPresenter : MonoBehaviour
     private void LeaveRoom()
     {
         PhotonNetwork.LeaveRoom();
-        SceneManager.LoadScene("MenuScene");
     }
 }

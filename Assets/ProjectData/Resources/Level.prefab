@@ -220,7 +220,6 @@ GameObject:
   - component: {fileID: 2789944335830021874}
   - component: {fileID: 8587907707582640885}
   - component: {fileID: 4924809192994511922}
-  - component: {fileID: 509442705}
   m_Layer: 0
   m_Name: SpawnPoint1
   m_TagString: Untagged
@@ -257,18 +256,6 @@ BoxCollider:
   m_Size: {x: 1.5, y: 2, z: 1.5}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &4924809192994511922
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1803346762738587572}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 10608284d71945d40beb3fc2d683eb55, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &509442705
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1454,6 +1441,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2611085331304707528}
   - component: {fileID: 9203085176014837753}
+  - component: {fileID: 3440425495008351036}
   m_Layer: 0
   m_Name: Level
   m_TagString: Untagged
@@ -1496,6 +1484,28 @@ MonoBehaviour:
   - {fileID: 8916604665761785295}
   - {fileID: 7633912066366358497}
   - {fileID: 4371628782045049004}
+--- !u!114 &3440425495008351036
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2611085331304707531}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 0
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &2611085331323278314
 GameObject:
   m_ObjectHideFlags: 0

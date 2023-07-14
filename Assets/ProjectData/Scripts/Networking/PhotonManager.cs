@@ -2,7 +2,6 @@ using Photon.Pun;
 using Photon.Realtime;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -22,6 +21,8 @@ public class PhotonManager : MonoBehaviourPunCallbacks
 
     public event Action<List<RoomInfo>> OnRoomListUpdated;
     public event Action<string> OnClientStateChanged;
+    public event Action<Player> OnPlayerJoined;
+    public event Action<Player> OnPlayerLeft;
 
     public string PhotonUsername { get => _photonUsername; set => _photonUsername = value; }
     public string Roomname { get => _roomname; set => _roomname = value; }
@@ -30,6 +31,7 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     private void Awake()
     {
         DontDestroyOnLoad(this);
+        Instance = this;
         if (PhotonNetwork.IsConnectedAndReady)
         {
             var player = PhotonNetwork.LocalPlayer;
@@ -78,12 +80,11 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         {
             IsOpen = true,
             IsVisible = RoomIsPrivate,
-            MaxPlayers = 4,
+            MaxPlayers = 9,
             CustomRoomPropertiesForLobby = new string[] { MAP_KEY, GAME_MODE_KEY },
             CustomRoomProperties = new() { { MAP_KEY, 1 }, { GAME_MODE_KEY, 1 } }
         };
         PhotonNetwork.CreateRoom(_roomname, roomOptions, _sqlLobby);
-        RoomListUpdate();
     }
 
     public void JoinRoom(RoomInfo roomInfo)
@@ -123,11 +124,21 @@ public class PhotonManager : MonoBehaviourPunCallbacks
 
     public override void OnLeftRoom()
     {
-        SceneManager.LoadScene("MenuScene");
+        if (SceneManager.GetActiveScene().name != "MenuScene") SceneManager.LoadScene("MenuScene");
     }
 
     public override void OnConnectedToMaster()
     {
         RoomListUpdate();
+    }
+
+    public override void OnPlayerEnteredRoom(Player newPlayer)
+    {
+        OnPlayerJoined?.Invoke(newPlayer);
+    }
+
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        OnPlayerLeft?.Invoke(otherPlayer);
     }
 }

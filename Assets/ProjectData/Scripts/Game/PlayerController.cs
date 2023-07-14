@@ -19,10 +19,10 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     private float _axisHorizontal;
     private float _scroll;
 
-    public ReactiveProperty<bool> IsFiring = new();
-    public ReactiveProperty<bool> IsDead = new();
-    public ReactiveProperty<float> Health = new();
-    public ReactiveProperty<int> BulletsCount = new();
+    public ReactiveProperty<bool> IsFiring = new(false);
+    public ReactiveProperty<bool> IsDead = new(false);
+    public ReactiveProperty<float> Health = new(100);
+    public ReactiveProperty<int> BulletsCount = new(30);
 
     public static GameObject LocalPlayerInstance;
 
@@ -106,15 +106,21 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     {
         if (stream.IsWriting)
         {
-            stream.SendNext(IsFiring.GetValue());
-            stream.SendNext(Health.GetValue());
-            stream.SendNext(IsDead.GetValue());
+            var isFiring = IsFiring.GetValue();
+            var health = Health.GetValue();
+            var isDead = IsDead.GetValue();
+            stream.SendNext(isFiring);
+            stream.SendNext(health);
+            stream.SendNext(isDead);
         }
         else
         {
-            IsFiring.SetValue((bool)stream.ReceiveNext());
-            IsDead.SetValue((bool)stream.ReceiveNext());
-            Health.SetValue((float)stream.ReceiveNext());
+            var isFiring = (bool)stream.ReceiveNext();
+            var isDead = (bool)stream.ReceiveNext();
+            var health = (float)stream.ReceiveNext();
+            IsFiring.SetValue(isFiring);
+            IsDead.SetValue(isDead);
+            Health.SetValue(health);
         }
     }
 
@@ -135,8 +141,11 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
         var health = Health.GetValue() - bullet.bulletDamage;
         OnPlayerHpValueChanged?.Invoke(health);
         Health.SetValue(health);
-        if (Health.GetValue() <= 0) gameObject.SetActive(false);
-        OnPlayerIsDead?.Invoke();
+        if (Health.GetValue() <= 0)
+        {
+            gameObject.SetActive(false);
+            OnPlayerIsDead?.Invoke();
+        }
     }
 
     private async Task Reload()

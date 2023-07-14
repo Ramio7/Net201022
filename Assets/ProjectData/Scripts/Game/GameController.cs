@@ -7,8 +7,9 @@ public class GameController : MonoBehaviourPunCallbacks
 {
     [SerializeField] private GameObject _playerPrefab;
     [SerializeField] private GameObject _uiPrefab;
-    [SerializeField] private LevelView _levelView;
-
+    [SerializeField] private GameObject _levelViewPrefab;
+    
+    private LevelView _levelView;
     private GameObject _playerCharacter;
     private PlayerController _playerController;
     private GameUIPresenter _gameUIPresenter;
@@ -16,6 +17,8 @@ public class GameController : MonoBehaviourPunCallbacks
 
     private void Awake()
     {
+        PhotonNetwork.Instantiate(_levelViewPrefab.name, Vector3.zero, Quaternion.identity).TryGetComponent(out LevelView levelView);
+        _levelView = levelView;
         _levelView.OnSpawnPointGranted += SetPlayerSpawnPosition;
         _levelView.GetSpawnPoint();
     }
@@ -31,7 +34,7 @@ public class GameController : MonoBehaviourPunCallbacks
 
         if (_playerPrefab == null)
         {
-            Debug.LogError("<Color=Red><b>Missing</b></Color> playerPrefab Reference. Please set it up in GameObject 'Game Manager'", this);
+            Debug.LogError("Missing playerPrefab Reference. Please set it up in GameObject 'Game Manager'", this);
         }
         else
         {
@@ -50,20 +53,38 @@ public class GameController : MonoBehaviourPunCallbacks
             }
         }
 
-        switch (PhotonNetwork.LocalPlayer.ActorNumber)
+        if (_playerCharacter.TryGetComponent(out PhotonView photonView) && photonView.IsMine)
         {
-            case 1:
-                SetPlayerColor(Color.black);
-                break;
-            case 2:
-                SetPlayerColor(Color.cyan);
-                break;
-            case 3:
-                SetPlayerColor(Color.magenta);
-                break;
-            case 4:
-                SetPlayerColor(Color.blue);
-                break;
+            switch (PhotonNetwork.LocalPlayer.ActorNumber)
+            {
+                case 1:
+                    SetPlayerColor(Color.black);
+                    break;
+                case 2:
+                    SetPlayerColor(Color.cyan);
+                    break;
+                case 3:
+                    SetPlayerColor(Color.magenta);
+                    break;
+                case 4:
+                    SetPlayerColor(Color.blue);
+                    break;
+                case 5: 
+                    SetPlayerColor(Color.gray);
+                    break;
+                case 6:
+                    SetPlayerColor(Color.green);
+                    break;
+                case 7:
+                    SetPlayerColor(Color.yellow);
+                    break;
+                case 8:
+                    SetPlayerColor(Color.white);
+                    break;
+                case 9:
+                    SetPlayerColor(Color.red);
+                    break;
+            }
         }
     }
 
@@ -83,7 +104,7 @@ public class GameController : MonoBehaviourPunCallbacks
     {
         _playerCharacter = PhotonNetwork.Instantiate(_playerPrefab.name, _playerSpawnPosition, Quaternion.identity, 0);
         _playerCharacter.TryGetComponent(out PlayerController playerController);
-        gameUIPresenter.PlayerMaxHP = playerController.Max_Health;
+        gameUIPresenter.playerMaxHP = playerController.Max_Health;
         playerController.OnPlayerHpValueChanged += gameUIPresenter.SetPlayerHPSlider;
         playerController.OnPlayerAmmoChanged += gameUIPresenter.SetBulletsCounter;
         playerController.OnPlayerIsDead += RevivePlayer;

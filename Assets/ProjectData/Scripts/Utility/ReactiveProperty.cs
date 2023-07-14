@@ -6,6 +6,11 @@ public class ReactiveProperty<T>
 
     public event Action<T> OnValueChanged;
 
+    public ReactiveProperty(T value)
+    {
+        _value = value;
+    }
+
     public void SetValue(T value)
     {
         if (_value.ToString() == value.ToString()) return;

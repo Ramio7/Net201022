@@ -1,12 +1,59 @@
+using Photon.Pun;
+using Photon.Realtime;
+using System;
 using System.Collections.Generic;
+using UnityEngine;
 
-public class GameStatisticsPanelController
+public class GameStatisticsPanelController : IDisposable
 {
-    private Dictionary<string, PlayerGameStatistics> _gameStatisticsList;
+    private Dictionary<string, PlayerGameStatistics> _gameStatisticsList = new();
+    private List<PlayerGameStatistics> _playerLinesList = new();
+    private readonly GameObject _playerGameStatisticsPrefab;
+    private readonly Transform _gameStatisticsParent;
 
-    public GameStatisticsPanelController(List<PlayerGameStatistics> gameStatisticsList)
+    public static GameStatisticsPanelController Instance;
+
+    public event Action<PlayerGameStatistics> OnPlayerLeftRoom;
+    public event Action<List<PlayerGameStatistics>> OnGameEnd;
+
+    public GameStatisticsPanelController(GameObject playerStatisticsPrefab, Transform gameStatisticsParent, Dictionary<int, Player> playerList)
     {
-        foreach (var gameStatistics in gameStatisticsList) _gameStatisticsList.Add(gameStatistics.PlayerStatistics.Name.GetValue(), gameStatistics);
+        Instance = this;
+        _playerGameStatisticsPrefab = playerStatisticsPrefab;
+        _gameStatisticsParent = gameStatisticsParent;
+        foreach (var player in playerList)
+        {
+            AddGameStatistics(player.Value);
+        }
+        PhotonManager.Instance.OnPlayerJoined += AddGameStatistics;
+        PhotonManager.Instance.OnPlayerLeft += ClearGameStatistics;
+    }
+
+    public void Dispose()
+    {
+        PhotonManager.Instance.OnPlayerJoined -= AddGameStatistics;
+        PhotonManager.Instance.OnPlayerLeft -= ClearGameStatistics;
+        OnGameEnd?.Invoke(_playerLinesList);
+    }
+
+    private void AddGameStatistics(Player player)
+    {
+        var lineGameObject = PhotonNetwork.Instantiate(_playerGameStatisticsPrefab.name, _gameStatisticsParent.position, Quaternion.identity);
+        lineGameObject.transform.SetParent(_gameStatisticsParent, false);
+        lineGameObject.TryGetComponent<PlayerGameStatistics>(out var playerGameStatistics);
+        _gameStatisticsList.Add(player.NickName, playerGameStatistics);
+        _playerLinesList.Add(playerGameStatistics);
+    }
+
+    private void ClearGameStatistics(Player player)
+    {
+        bool playerStatisticsFinder(PlayerGameStatistics playerGameStatistics)
+        {
+            return playerGameStatistics.PlayerStatistics.Name.GetValue() == player.NickName;
+        }
+        var findedLine = _playerLinesList.Find(playerStatisticsFinder);
+        OnPlayerLeftRoom?.Invoke(findedLine);
+        PhotonNetwork.Destroy(findedLine.gameObject);
     }
 
     public void AddKillToPlayer(string playerName)

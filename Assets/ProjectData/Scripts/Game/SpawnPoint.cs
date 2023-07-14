@@ -3,7 +3,7 @@ using UnityEngine;
 [RequireComponent(typeof(Collider))]
 public class SpawnPoint : MonoBehaviour
 {
-    public ReactiveProperty<bool> SpawnPointClosed = new();
+    public ReactiveProperty<bool> SpawnPointClosed = new(false);
 
     private void OnCollisionStay(Collision collision)
     {

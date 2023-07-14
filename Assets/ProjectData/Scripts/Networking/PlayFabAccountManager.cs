@@ -2,6 +2,7 @@ using PlayFab;
 using PlayFab.ClientModels;
 using System;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class PlayFabAccountManager : MonoBehaviour
 {
@@ -39,6 +40,7 @@ public class PlayFabAccountManager : MonoBehaviour
             RequireBothUsernameAndEmail = true
         }, result =>
         {
+            CreateUserXPData(result);
             Debug.Log($"Success: {_playFabUserName}");
             OnCreateAccountMessageUpdate.Invoke(result.ToString(), Color.green);
         }, error =>
@@ -46,6 +48,26 @@ public class PlayFabAccountManager : MonoBehaviour
             Debug.LogError($"Fail: {error.ErrorMessage}");
             OnCreateAccountMessageUpdate.Invoke(error.ErrorMessage, Color.red);
         });
+    }
+
+    private void CreateUserXPData(RegisterPlayFabUserResult result)
+    {
+        PlayFabClientAPI.UpdateUserData(new UpdateUserDataRequest()
+        {
+            AuthenticationContext = new()
+            {
+                PlayFabId = result.PlayFabId,
+            },
+            Data = new Dictionary<string, string>
+            {
+                { "Experience", "0"},
+            },
+            Permission = UserDataPermission.Public,
+        },
+        result =>
+        {
+            Debug.Log(result.Request.ToString());
+        }, OnError());
     }
 
     public void ConnectPlayFab()
