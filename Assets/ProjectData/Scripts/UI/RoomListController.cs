@@ -1,7 +1,6 @@
 using Photon.Realtime;
 using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -31,19 +30,9 @@ public class RoomListController : IDisposable
 
     private void CreateRoomInfoContainer(RoomInfo roomInfo)
     {
-        var newRoomButton = Object.Instantiate(_roomInfoButtonPrefab);
-        newRoomButton.transform.SetParent(_roomListContainerTransform, false);
+        var newRoomButton = Object.Instantiate(_roomInfoButtonPrefab, _roomListContainerTransform);
         newRoomButton.TryGetComponent<RoomInfoContainer>(out var roomInfoContainer);
         roomInfoContainer.SetRoomInfo(roomInfo);
-        RoomList.Add(roomInfoContainer);
-    }
-
-    private void CreateRoomInfoContainer(Room room)
-    {
-        var newRoomButton = Object.Instantiate(_roomInfoButtonPrefab);
-        newRoomButton.transform.SetParent(_roomListContainerTransform, false);
-        newRoomButton.TryGetComponent<RoomInfoContainer>(out var roomInfoContainer);
-        roomInfoContainer.SetRoomInfo(room);
         RoomList.Add(roomInfoContainer);
     }
 
@@ -70,7 +59,6 @@ public class RoomListController : IDisposable
         {
             for (var i = 0; i < RoomList.Count; i++)
             {
-
                 if ((RoomList[i] == null && i == 0) || (RoomList[i].gameObject.activeSelf == true && i == RoomList.Count - 1)) continue;
                 SetRoomContainerActive(roomInfo, i);
             }

@@ -3,13 +3,17 @@ using System;
 using System.Threading.Tasks;
 using UnityEngine;
 
-[RequireComponent(/*typeof(CharacterController),*/ typeof(Rigidbody))]
+[RequireComponent(typeof(Rigidbody))]
 public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
 {
     [SerializeField] private BulletDiploma _bulletPrefab;
     [SerializeField] private Transform _bulletSpawnPoint;
     [SerializeField] private Transform _cameraTransform;
-    [SerializeField] private float _playerSpeed;
+    [SerializeField, Range(5f, 15f)] private float _playerThrottle;
+    [SerializeField, Range(0.1f, 5f)] private float _mouseSensitivity;
+    [SerializeField, Min(200), Tooltip("Fire delay in milliseconds")] private int _fireRate;
+    [SerializeField, Min(1000), Tooltip("Reload time in milleseconds")] private int _reloadTime;
+
     private Rigidbody _rigidbody;
     private float _axisVertical;
     private float _axisHorizontal;
@@ -44,8 +48,6 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
         if (!photonView.IsMine && !PhotonNetwork.IsConnected) return;
 
         IsFiring.OnValueChanged += Fire;
-
-        Camera.main.transform.SetPositionAndRotation(_cameraTransform.position, _cameraTransform.rotation);
     }
 
     private void OnDestroy()
@@ -71,32 +73,23 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
 
     private void FixedUpdate()
     {
+        if (_scroll != 0.0f) RotateCharacter(_scroll);
+
         if (_axisVertical != 0) Move(_axisVertical);
         if (_axisHorizontal != 0) Strafe(_axisHorizontal);
-        if (_scroll != 0.0f) RotateCharacter(_scroll);
+
+        _rigidbody.inertiaTensor = Vector3.zero;
     }
 
-    private void Move(float axisVertical)
-    {
-        _rigidbody.AddForce(axisVertical * _playerSpeed * Time.deltaTime * Vector3.forward, ForceMode.VelocityChange);
-    }
+    public void StartCameraController() => new CameraController(transform, _cameraTransform);
 
-    private void Strafe(float axisHorizontal)
-    {
-        _rigidbody.AddForce(axisHorizontal * _playerSpeed * Time.deltaTime * Vector3.right, ForceMode.VelocityChange);
-    }
+    private void Move(float axisVertical) => _rigidbody.AddForce(axisVertical * _playerThrottle * Time.deltaTime * transform.forward, ForceMode.VelocityChange);
 
-    private void RotateCharacter(float scroll)
-    {
-        transform.Rotate(Vector3.up, scroll);
-    }
+    private void Strafe(float axisHorizontal) => _rigidbody.AddForce(axisHorizontal * _playerThrottle * Time.deltaTime * transform.right, ForceMode.VelocityChange);
 
-    public override void OnDisable()
-    {
-        base.OnDisable();
-    }
+    private void RotateCharacter(float scroll) => transform.Rotate(Vector3.up, scroll * _mouseSensitivity);
 
-    public void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
         if (!photonView.IsMine)
         {
@@ -121,8 +114,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
         {
             IsFiring.SetValue((bool)stream.ReceiveNext());
             IsDead.SetValue((bool)stream.ReceiveNext());
-            var playerHealth = (float)stream.ReceiveNext();
-            Health.SetValue(playerHealth);
+            Health.SetValue((float)stream.ReceiveNext());
         }
     }
 
@@ -151,12 +143,14 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     {
         await Task.Run(() => WaitReload());
         BulletsCount.SetValue(Max_Bullets);
+        OnPlayerAmmoChanged?.Invoke(Max_Bullets, Max_Bullets);
         IsFiring.SetValue(false);
     }
 
     private async Task StartBullet()
     {
-        PhotonNetwork.Instantiate(_bulletPrefab.name, _bulletSpawnPoint.position, Quaternion.identity);
+        var bullet = PhotonNetwork.Instantiate(_bulletPrefab.name, _bulletSpawnPoint.position, Quaternion.identity);
+        bullet.transform.SetParent(null);
         var bulletsLeft = BulletsCount.GetValue() - 1;
         BulletsCount.SetValue(bulletsLeft);
         OnPlayerAmmoChanged?.Invoke(bulletsLeft, Max_Bullets);
@@ -164,7 +158,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
         IsFiring.SetValue(false);
     }
 
-    private Task FireRateWaiting() => Task.Delay(200);
+    private Task FireRateWaiting() => Task.Delay(_fireRate);
 
-    private Task WaitReload() => Task.Delay(1000);
+    private Task WaitReload() => Task.Delay(_reloadTime);
 }

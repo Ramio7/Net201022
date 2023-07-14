@@ -8,6 +8,10 @@ public class SpawnPoint : MonoBehaviour
     private void OnCollisionStay(Collision collision)
     {
         if (collision.gameObject.TryGetComponent(out PlayerController player)) SpawnPointClosed?.SetValue(true);
-        else SpawnPointClosed.SetValue(false);
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.TryGetComponent(out PlayerController player)) SpawnPointClosed?.SetValue(false);
     }
 }

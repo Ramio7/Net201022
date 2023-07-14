@@ -24,6 +24,11 @@ public class PlayFabAccountManager : MonoBehaviour
 
     public static event Action<float, string> OnUserHpUpdate;
 
+    private void Awake()
+    {
+        DontDestroyOnLoad(this);
+    }
+
     public void CreatePlayFabAccount()
     {
         PlayFabClientAPI.RegisterPlayFabUser(new RegisterPlayFabUserRequest
@@ -60,40 +65,13 @@ public class PlayFabAccountManager : MonoBehaviour
             _request,
             result =>
             {
-                OnLoginSuccess(result.PlayFabId);
                 OnLoginMessageUpdate.Invoke($"{result.PlayFabId} connected to PlayFab", Color.green);
             },
             error =>
             {
-                Debug.LogError(error.GenerateErrorReport());
+                OnError();
                 OnLoginMessageUpdate.Invoke(error.GenerateErrorReport(), Color.red);
             });
-    }
-
-    private void OnLoginSuccess(string playFabId)
-    {
-        PlayFabClientAPI.UpdateUserData(new()
-        {
-            Data = new()
-            {
-                { "Health", 100.ToString() }
-            }
-        },
-            result =>
-            {
-                PlayFabClientAPI.GetUserData(new()
-                {
-                    PlayFabId = playFabId,
-                },
-                result =>
-                {
-                    if (float.TryParse(result.Data["Health"].Value, out var userHP)) OnUserHpUpdate?.Invoke(userHP, playFabId);
-                    else return;
-                    Debug.LogWarning($"User startin HP: {userHP}");
-                },
-                OnError());
-            },
-            OnError());
     }
 
     private Action<PlayFabError> OnError()

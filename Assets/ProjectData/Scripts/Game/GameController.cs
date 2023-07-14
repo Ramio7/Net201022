@@ -35,13 +35,14 @@ public class GameController : MonoBehaviourPunCallbacks
         }
         else
         {
-            if (!PhotonNetwork.Instantiate(_uiPrefab.name, Vector3.zero, Quaternion.identity).TryGetComponent(out GameUIPresenter _gameUIPresenter))
+            if (!PhotonNetwork.Instantiate(_uiPrefab.name, Vector3.zero, Quaternion.identity).TryGetComponent(out GameUIPresenter gameUIPresenter))
                 Debug.LogError("GameUIPresenter not attached to UI");
+            _gameUIPresenter = gameUIPresenter;
 
             if (_playerCharacter == null)
             {
                 _playerController = InstantiatePlayerCharacter(_gameUIPresenter);
-                SetPlayerBulletsMaximum(_gameUIPresenter, _playerController);
+                SetPlayerBulletsMaximum(gameUIPresenter, _playerController);
             }
             else
             {
@@ -66,24 +67,28 @@ public class GameController : MonoBehaviourPunCallbacks
         }
     }
 
-    public override void OnDisable()
+    private void OnDestroy()
     {
         _levelView.OnSpawnPointGranted -= SetPlayerSpawnPosition;
-        //_playerController.OnPlayerHpValueChanged -= _gameUIPresenter.SetPlayerHPSlider;
-        //_playerController.OnPlayerAmmoChanged -= _gameUIPresenter.SetBulletsCounter;
-        //_playerController.OnPlayerIsDead -= RevivePlayer;
-        base.OnDisable();
+        if (_playerController != null)
+        {
+            _playerController.OnPlayerHpValueChanged -= _gameUIPresenter.SetPlayerHPSlider;
+            _playerController.OnPlayerAmmoChanged -= _gameUIPresenter.SetBulletsCounter;
+            _playerController.OnPlayerIsDead -= RevivePlayer;
+        }
+        _playerController = null;
     }
 
-    private PlayerController InstantiatePlayerCharacter(GameUIPresenter _gameUIPresenter)
+    private PlayerController InstantiatePlayerCharacter(GameUIPresenter gameUIPresenter)
     {
         _playerCharacter = PhotonNetwork.Instantiate(_playerPrefab.name, _playerSpawnPosition, Quaternion.identity, 0);
-        _playerCharacter.TryGetComponent(out PlayerController _playerController);
-        _gameUIPresenter.PlayerMaxHP = _playerController.Max_Health;
-        _playerController.OnPlayerHpValueChanged += _gameUIPresenter.SetPlayerHPSlider;
-        _playerController.OnPlayerAmmoChanged += _gameUIPresenter.SetBulletsCounter;
-        _playerController.OnPlayerIsDead += RevivePlayer;
-        return _playerController;
+        _playerCharacter.TryGetComponent(out PlayerController playerController);
+        gameUIPresenter.PlayerMaxHP = playerController.Max_Health;
+        playerController.OnPlayerHpValueChanged += gameUIPresenter.SetPlayerHPSlider;
+        playerController.OnPlayerAmmoChanged += gameUIPresenter.SetBulletsCounter;
+        playerController.OnPlayerIsDead += RevivePlayer;
+        playerController.StartCameraController();
+        return playerController;
     }
 
     private void SetPlayerColor(Color color) => _playerCharacter.GetComponent<MeshRenderer>().material.color = color;

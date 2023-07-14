@@ -191,36 +191,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &509442702 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1803346762738587572, guid: 2fd98346428996f44a440728d9c4d6db, type: 3}
-  m_PrefabInstance: {fileID: 1445040953}
-  m_PrefabAsset: {fileID: 0}
---- !u!65 &509442704
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 509442702}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1.5, y: 2, z: 1.5}
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &509442705
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 509442702}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 10608284d71945d40beb3fc2d683eb55, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &521779596
 GameObject:
   m_ObjectHideFlags: 0
@@ -500,14 +470,6 @@ PrefabInstance:
     - target: {fileID: 2611085331304707531, guid: 2fd98346428996f44a440728d9c4d6db, type: 3}
       propertyPath: m_Name
       value: Level
-      objectReference: {fileID: 0}
-    - target: {fileID: 2611085331885245958, guid: 2fd98346428996f44a440728d9c4d6db, type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 8c13ddd2bc8fa4e85943376cf7c8bf7d, type: 2}
-    - target: {fileID: 2789944335830021874, guid: 2fd98346428996f44a440728d9c4d6db, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 1.093
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2fd98346428996f44a440728d9c4d6db, type: 3}

@@ -7,7 +7,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UIPresenter : MonoBehaviour
+public class MenuUIPresenter : MonoBehaviour
 {
     [Header("Main menu")]
     [SerializeField] private Canvas _mainMenuCanvas;
@@ -38,6 +38,7 @@ public class UIPresenter : MonoBehaviour
     [SerializeField] private Button _createRoomButton;
     [SerializeField] private Button _joinRoomButton;
     [SerializeField] private Button _backToMainMenuButton;
+    [SerializeField] private Button _refreshRoomlistButton;
     [SerializeField] private TMP_Text _photonLoginMessage;
     [SerializeField] private Transform _roomListTransform;
 
@@ -57,6 +58,7 @@ public class UIPresenter : MonoBehaviour
     [SerializeField] private PlayFabAccountManager _playFabAccountManager;
     [SerializeField] private PhotonManager _photonManager;
     [SerializeField] private RoomInfoContainer _roomContainerPrefab;
+    [SerializeField] private GameObject _authenticationPrefab;
 
     private readonly List<Button> _buttons = new();
     private readonly List<Canvas> _canvas = new();
@@ -66,9 +68,20 @@ public class UIPresenter : MonoBehaviour
 
     private void Awake()
     {
+        _photonManager = FindFirstObjectByType<PhotonManager>();
+        _playFabAccountManager = FindFirstObjectByType<PlayFabAccountManager>();
+        GameObject auth;
+        if (_playFabAccountManager == null || _photonManager == null)
+        {
+            auth = Instantiate(_authenticationPrefab, null);
+            _photonManager = auth.GetComponent<PhotonManager>();
+            _playFabAccountManager = auth.GetComponent<PlayFabAccountManager>();
+        }
+
         StartRoomListController();
         SubscribeEvents();
         RegisterCanvas();
+
         if (PhotonNetwork.IsConnected) SetPhotonLogInCanvasActive();
         else SetMainMenuCanvasActive();
 
@@ -100,7 +113,7 @@ public class UIPresenter : MonoBehaviour
 
     private void OnDisable()
     {
-        UnsubscribeEvents();
+        if (_photonManager != null && _playFabAccountManager != null) UnsubscribeEvents();
         _roomListController?.Dispose();
     }
 
@@ -190,6 +203,9 @@ public class UIPresenter : MonoBehaviour
         _backToMainMenuButton.onClick.AddListener(SetMainMenuCanvasActive);
         _backToMainMenuButton.onClick.AddListener(_photonManager.DisconnectPhoton);
         _buttons.Add(_backToMainMenuButton);
+
+        _refreshRoomlistButton.onClick.AddListener(_photonManager.RoomListUpdate);
+        _buttons.Add(_refreshRoomlistButton);
     }
 
     private void SubscribeCreateRoomEvents()
@@ -258,6 +274,13 @@ public class UIPresenter : MonoBehaviour
     public void SetCreateAccountCanvasActive() => SetCanvasActive(_createAccountMenuCanvas);
     private void SetPlayFabLogInCanvasActive()
     {
+        if (PlayFabClientAPI.IsClientLoggedIn())
+        {
+            SetPhotonLogInCanvasActive();
+            _photonManager.ConnectPhoton();
+            return;
+        }
+
         if (_createAccountMenuCanvas.enabled == true)
         {
             if (_createAccountMessage.color == Color.red) return;
@@ -267,6 +290,7 @@ public class UIPresenter : MonoBehaviour
     private async void SetPhotonLogInCanvasActive()
     {
         await Task.Run(() => WaitPlayFabLogin());
+        await Task.Run(() => WaitPhotonLogin());
         SetCanvasActive(_photonLoginScreenCanvas);
     }
     private void SetMainMenuCanvasActive() => SetCanvasActive(_mainMenuCanvas);
@@ -282,6 +306,12 @@ public class UIPresenter : MonoBehaviour
     private Task WaitPlayFabLogin()
     {
         while (!PlayFabClientAPI.IsClientLoggedIn()) Task.Delay(100);
+        return Task.FromResult(0);
+    }
+
+    private Task WaitPhotonLogin()
+    {
+        while (!PhotonNetwork.IsConnected) Task.Delay(100);
         return Task.FromResult(0);
     }
 

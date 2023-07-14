@@ -1618,7 +1618,7 @@ MonoBehaviour:
   _exitGameCanvas: {fileID: 625252446134279260}
   _yesButton: {fileID: 4228325437940046463}
   _noButton: {fileID: 8368175210109193739}
-  PlayerMaxHP: 0
+  PlayerMaxHP: 100
 --- !u!114 &1107105054311859697
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1918,7 +1918,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Ammo: x/30'
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

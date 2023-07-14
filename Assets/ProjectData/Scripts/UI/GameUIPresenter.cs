@@ -22,6 +22,7 @@ public class GameUIPresenter : MonoBehaviour
 
     private void Start()
     {
+        HideMouseCursor();
         SubscribeEvents();
     }
 
@@ -50,11 +51,33 @@ public class GameUIPresenter : MonoBehaviour
         _noButton.onClick.RemoveAllListeners();
     }
 
+    private void HideMouseCursor()
+    {
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+    }
+
+    private void ShowMouseCursor()
+    {
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+    }
+
     public void SetPlayerHPSlider(float hp) => _playerHp.value = hp / PlayerMaxHP;
     public void SetBulletsCounter(int bulletCount, int maxBullets) => _ammoCounter.text = $"Ammo: {bulletCount} / {maxBullets}";
 
-    private void SetExitCanvasActiveSelf() => _exitGameCanvas.enabled = true;
-    private void SetExitCanvasUnactiveSelf() => _exitGameCanvas.enabled = false;
+    private void SetExitCanvasActiveSelf()
+    {
+        _exitGameCanvas.enabled = true;
+        ShowMouseCursor();
+    }
+
+    private void SetExitCanvasUnactiveSelf()
+    {
+        _exitGameCanvas.enabled = false;
+        HideMouseCursor();
+    }
+
     private void SetStatisticsCanvasActiveSelf() => _gameStatisticsCanvas.enabled = true;
     private void SetStatisticsCanvasUnactiveSelf() => _gameStatisticsCanvas.enabled= false;
     private void LeaveRoom()

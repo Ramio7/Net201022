@@ -10,7 +10,6 @@ public class BulletDiploma : MonoBehaviour
 
     private void OnEnable()
     {
-        GetComponent<AudioSource>().Play();
         GetComponent<Rigidbody>().AddRelativeForce(Vector3.forward * Bullet_Starting_Force);
     }
 
