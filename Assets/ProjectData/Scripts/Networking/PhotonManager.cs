@@ -13,7 +13,8 @@ public class PhotonManager : MonoBehaviourPunCallbacks
 
     private ClientState _currentState;
 
-    private readonly TypedLobby _sqlLobby = new("DiplomaLoppy", LobbyType.SqlLobby);
+    public static readonly TypedLobby SqlLobby = new("DiplomaLoppy", LobbyType.SqlLobby);
+    public static readonly string SqlLobbyFilter = "MAP BETWEEN 0 AND 10 AND GAME_MODE BETWEEN 0 AND 10";
     private const string MAP_KEY = "MAP";
     private const string GAME_MODE_KEY = "GAME_MODE";
 
@@ -62,12 +63,12 @@ public class PhotonManager : MonoBehaviourPunCallbacks
             PhotonNetwork.NickName = _photonUsername;
             PhotonNetwork.ConnectUsingSettings();
             PhotonNetwork.GameVersion = PhotonNetwork.AppVersion;
-            PhotonNetwork.JoinLobby(_sqlLobby);
+            PhotonNetwork.JoinLobby(SqlLobby);
             PhotonNetwork.AddCallbackTarget(this);
         }
     }
 
-    public void RoomListUpdate() => PhotonNetwork.GetCustomRoomList(_sqlLobby, "MAP BETWEEN 0 AND 10 AND GAME_MODE BETWEEN 0 AND 10");
+    public void RoomListUpdate() => PhotonNetwork.GetCustomRoomList(SqlLobby, SqlLobbyFilter);
 
     public void DisconnectPhoton()
     {
@@ -84,7 +85,7 @@ public class PhotonManager : MonoBehaviourPunCallbacks
             CustomRoomPropertiesForLobby = new string[] { MAP_KEY, GAME_MODE_KEY },
             CustomRoomProperties = new() { { MAP_KEY, 1 }, { GAME_MODE_KEY, 1 } }
         };
-        PhotonNetwork.CreateRoom(_roomname, roomOptions, _sqlLobby);
+        PhotonNetwork.CreateRoom(_roomname, roomOptions, SqlLobby);
     }
 
     public void JoinRoom(RoomInfo roomInfo)
@@ -99,7 +100,7 @@ public class PhotonManager : MonoBehaviourPunCallbacks
 
     public void JoinRandomRoom()
     {
-        PhotonNetwork.JoinRandomRoom(null, 0, MatchmakingMode.FillRoom, _sqlLobby, "MAP BETWEEN 0 AND 10 AND GAME_MODE BETWEEN 0 AND 10");
+        PhotonNetwork.JoinRandomRoom(null, 0, MatchmakingMode.FillRoom, SqlLobby, SqlLobbyFilter);
     }
 
     public void LeaveCurrentRoom()
@@ -119,12 +120,13 @@ public class PhotonManager : MonoBehaviourPunCallbacks
 
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
-        OnRoomListUpdated.Invoke(roomList);
+        OnRoomListUpdated?.Invoke(roomList);
     }
 
     public override void OnLeftRoom()
     {
         if (SceneManager.GetActiveScene().name != "MenuScene") SceneManager.LoadScene("MenuScene");
+        OnPlayerLeft?.Invoke(PhotonNetwork.LocalPlayer);
     }
 
     public override void OnConnectedToMaster()

@@ -37,7 +37,7 @@ public class PlayFabAccountManager : MonoBehaviour
             Username = _playFabUserName,
             Email = _playFabEmail,
             Password = _playFabPassword,
-            RequireBothUsernameAndEmail = true
+            RequireBothUsernameAndEmail = true,
         }, result =>
         {
             CreateUserXPData(result);
@@ -52,7 +52,7 @@ public class PlayFabAccountManager : MonoBehaviour
 
     private void CreateUserXPData(RegisterPlayFabUserResult result)
     {
-        PlayFabClientAPI.UpdateUserData(new UpdateUserDataRequest()
+        PlayFabServerAPI.UpdateUserData(new()
         {
             AuthenticationContext = new()
             {
@@ -62,7 +62,7 @@ public class PlayFabAccountManager : MonoBehaviour
             {
                 { "Experience", "0"},
             },
-            Permission = UserDataPermission.Public,
+            Permission = PlayFab.ServerModels.UserDataPermission.Public
         },
         result =>
         {

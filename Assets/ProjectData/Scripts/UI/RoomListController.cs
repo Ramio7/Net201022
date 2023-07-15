@@ -1,3 +1,4 @@
+using Photon.Pun;
 using Photon.Realtime;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,8 @@ public class RoomListController : IDisposable
 
     public RoomListController(Transform roomListContainerTransform, RoomInfoContainer roomInfoButtonPrefab)
     {
+        PhotonManager.Instance.OnRoomListUpdated += UpdateRoomList;
+        PhotonNetwork.GetCustomRoomList(PhotonManager.SqlLobby, PhotonManager.SqlLobbyFilter);
         _roomListContainerTransform = roomListContainerTransform;
         _roomInfoButtonPrefab = roomInfoButtonPrefab;
     }

@@ -57,6 +57,8 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
 
     private void Update()
     {
+        if (!photonView.IsMine) return;
+
         if (Input.GetMouseButton(0)) IsFiring.SetValue(true);
         else IsFiring.SetValue(false);
 
@@ -73,6 +75,8 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
 
     private void FixedUpdate()
     {
+        if (!photonView.IsMine) return;
+
         if (_scroll != 0.0f) RotateCharacter(_scroll);
 
         if (_axisVertical != 0) Move(_axisVertical);
@@ -91,10 +95,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!photonView.IsMine)
-        {
-            return;
-        }
+        if (!photonView.IsMine) return;
 
         if (other.TryGetComponent<BulletDiploma>(out var bullet))
         {

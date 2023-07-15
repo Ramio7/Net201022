@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class GameController : MonoBehaviourPunCallbacks
+public class GameController : MonoBehaviourPunCallbacks, IPunObservable
 {
     [SerializeField] private GameObject _playerPrefab;
     [SerializeField] private GameObject _uiPrefab;
@@ -17,6 +17,8 @@ public class GameController : MonoBehaviourPunCallbacks
 
     private void Awake()
     {
+        if (!PhotonNetwork.IsConnected) return;
+
         PhotonNetwork.Instantiate(_levelViewPrefab.name, Vector3.zero, Quaternion.identity).TryGetComponent(out LevelView levelView);
         _levelView = levelView;
         _levelView.OnSpawnPointGranted += SetPlayerSpawnPosition;
@@ -38,7 +40,7 @@ public class GameController : MonoBehaviourPunCallbacks
         }
         else
         {
-            if (!PhotonNetwork.Instantiate(_uiPrefab.name, Vector3.zero, Quaternion.identity).TryGetComponent(out GameUIPresenter gameUIPresenter))
+            if (!Instantiate(_uiPrefab, Vector3.zero, Quaternion.identity, null).TryGetComponent(out GameUIPresenter gameUIPresenter))
                 Debug.LogError("GameUIPresenter not attached to UI");
             _gameUIPresenter = gameUIPresenter;
 
@@ -90,7 +92,7 @@ public class GameController : MonoBehaviourPunCallbacks
 
     private void OnDestroy()
     {
-        _levelView.OnSpawnPointGranted -= SetPlayerSpawnPosition;
+        if (_levelView != null) _levelView.OnSpawnPointGranted -= SetPlayerSpawnPosition;
         if (_playerController != null)
         {
             _playerController.OnPlayerHpValueChanged -= _gameUIPresenter.SetPlayerHPSlider;
@@ -98,6 +100,7 @@ public class GameController : MonoBehaviourPunCallbacks
             _playerController.OnPlayerIsDead -= RevivePlayer;
         }
         _playerController = null;
+        _levelView = null;
     }
 
     private PlayerController InstantiatePlayerCharacter(GameUIPresenter gameUIPresenter)
@@ -128,5 +131,10 @@ public class GameController : MonoBehaviourPunCallbacks
     private static void SetPlayerBulletsMaximum(GameUIPresenter _gameUIPresenter, PlayerController _playerController)
     {
         _gameUIPresenter.SetBulletsCounter(_playerController.Max_Bullets, _playerController.Max_Bullets);
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        throw new System.NotImplementedException();
     }
 }

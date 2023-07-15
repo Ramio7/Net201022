@@ -3,7 +3,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(PhotonView))]
 public class GameUIPresenter : MonoBehaviour
 {
     [SerializeField] private GameObject _playerStatisticsPrefab;
@@ -93,8 +92,5 @@ public class GameUIPresenter : MonoBehaviour
 
     private void SetStatisticsCanvasActiveSelf() => _gameStatisticsCanvas.enabled = true;
     private void SetStatisticsCanvasUnactiveSelf() => _gameStatisticsCanvas.enabled= false;
-    private void LeaveRoom()
-    {
-        PhotonNetwork.LeaveRoom();
-    }
+    private void LeaveRoom() => PhotonNetwork.LeaveRoom();
 }
