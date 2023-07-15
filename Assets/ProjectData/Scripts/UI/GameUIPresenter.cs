@@ -3,10 +3,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class GameUIPresenter : MonoBehaviour
+public class GameUIPresenter : MonoBehaviourPunCallbacks
 {
-    [SerializeField] private GameObject _playerStatisticsPrefab;
-
     [Header("UI fields")]
     [SerializeField] private Slider _playerHp;
     [SerializeField] private TMP_Text _ammoCounter;
@@ -15,26 +13,19 @@ public class GameUIPresenter : MonoBehaviour
     [SerializeField] private Canvas _exitGameCanvas;
     [SerializeField] private Button _yesButton;
     [SerializeField] private Button _noButton;
-    [SerializeField] private Transform _playerStatisticsParent;
-
-    private GameStatisticsPanelController _statisticsController;
-    private MatchController _matchController;
 
     public float playerMaxHP;
-    public GameStatisticsPanelController StatisticsController { get => _statisticsController; set => _statisticsController = value; }
 
     private void Start()
     {
-        StartGameStatistics();
         HideMouseCursor();
         SubscribeEvents();
     }
 
-    private void OnDisable()
+    public override void OnDisable()
     {
         ShowMouseCursor();
         UnsubscribeEvents();
-        _statisticsController.Dispose();
     }
 
     private void Update()
@@ -43,12 +34,6 @@ public class GameUIPresenter : MonoBehaviour
 
         if (Input.GetKey(KeyCode.Tab)) SetStatisticsCanvasActiveSelf();
         else SetStatisticsCanvasUnactiveSelf();
-    }
-
-    private void StartGameStatistics()
-    {
-        var players = PhotonNetwork.CurrentRoom.Players;
-        _statisticsController = new GameStatisticsPanelController(_playerStatisticsPrefab, _playerStatisticsParent, players);
     }
 
     private void SubscribeEvents()

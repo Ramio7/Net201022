@@ -4,36 +4,23 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameStatisticsPanelController : IDisposable
+public class GameStatisticsPanelController : MonoBehaviourPunCallbacks
 {
-    private Dictionary<string, PlayerGameStatistics> _gameStatisticsList = new();
+    [SerializeField] private GameObject _playerGameStatisticsPrefab;
+    [SerializeField] private Transform _gameStatisticsParent;
+
     private List<PlayerGameStatistics> _playerLinesList = new();
-    private readonly GameObject _playerGameStatisticsPrefab;
-    private readonly Transform _gameStatisticsParent;
 
-    public static GameStatisticsPanelController Instance;
+    public static event Action<List<PlayerGameStatistics>> OnGameEnd;
 
-    public event Action<PlayerGameStatistics> OnPlayerLeftRoom;
-    public event Action<List<PlayerGameStatistics>> OnGameEnd;
-
-    public GameStatisticsPanelController(GameObject playerStatisticsPrefab, Transform gameStatisticsParent, Dictionary<int, Player> playerList)
+    private void Awake()
     {
-        Instance = this;
-        _playerGameStatisticsPrefab = playerStatisticsPrefab;
-        _gameStatisticsParent = gameStatisticsParent;
+        PhotonNetwork.AddCallbackTarget(this);
+        var playerList = PhotonNetwork.CurrentRoom.Players;
         foreach (var player in playerList)
         {
             AddGameStatistics(player.Value);
         }
-        PhotonManager.Instance.OnPlayerJoined += AddGameStatistics;
-        PhotonManager.Instance.OnPlayerLeft += ClearGameStatistics;
-    }
-
-    public void Dispose()
-    {
-        PhotonManager.Instance.OnPlayerJoined -= AddGameStatistics;
-        PhotonManager.Instance.OnPlayerLeft -= ClearGameStatistics;
-        OnGameEnd?.Invoke(_playerLinesList);
     }
 
     private void AddGameStatistics(Player player)
@@ -41,45 +28,49 @@ public class GameStatisticsPanelController : IDisposable
         var lineGameObject = PhotonNetwork.Instantiate(_playerGameStatisticsPrefab.name, _gameStatisticsParent.position, Quaternion.identity);
         lineGameObject.transform.SetParent(_gameStatisticsParent, false);
         lineGameObject.TryGetComponent<PlayerGameStatistics>(out var playerGameStatistics);
-        _gameStatisticsList.Add(player.NickName, playerGameStatistics);
+        playerGameStatistics.StartPlayerStatistics(player);
         _playerLinesList.Add(playerGameStatistics);
     }
 
     private void ClearGameStatistics(Player player)
     {
-        bool playerStatisticsFinder(PlayerGameStatistics playerGameStatistics)
-        {
-            return playerGameStatistics.PlayerStatistics.Name.GetValue() == player.NickName;
-        }
-        var findedLine = _playerLinesList.Find(playerStatisticsFinder);
-        OnPlayerLeftRoom?.Invoke(findedLine);
+        var findedLine = _playerLinesList.Find(playerGameStatistics => PlayerStatisticsFinder(playerGameStatistics, player));
         PhotonNetwork.Destroy(findedLine.gameObject);
     }
 
-    public void AddKillToPlayer(string playerName)
+    private static bool PlayerStatisticsFinder(PlayerGameStatistics playerGameStatistics, Player player)
     {
-        if (_gameStatisticsList.ContainsKey(playerName))
-        {
-            var playerKills = _gameStatisticsList[playerName].PlayerStatistics.Kills.GetValue() + 1;
-            _gameStatisticsList[playerName].PlayerStatistics.Kills.SetValue(playerKills);
-        }
+        return playerGameStatistics.PlayerStatistics.Name.GetValue() == player.NickName;
     }
 
-    public void AddAssistToPlayer(string playerName)
+    public void AddKillToPlayer(Player player)
     {
-        if (_gameStatisticsList.ContainsKey(playerName))
-        {
-            var playerKills = _gameStatisticsList[playerName].PlayerStatistics.Assists.GetValue() + 1;
-            _gameStatisticsList[playerName].PlayerStatistics.Assists.SetValue(playerKills);
-        }
+        var findedLine = _playerLinesList.Find(playerGameStatistics => PlayerStatisticsFinder(playerGameStatistics, player));
+        var kills = findedLine.PlayerStatistics.Kills.Value + 1;
+        findedLine.PlayerStatistics.Kills.SetValue(kills);
     }
 
-    public void AddDeathToPlayer(string playerName)
+    public void AddAssistToPlayer(Player player)
     {
-        if (_gameStatisticsList.ContainsKey(playerName))
-        {
-            var playerKills = _gameStatisticsList[playerName].PlayerStatistics.Assists.GetValue() + 1;
-            _gameStatisticsList[playerName].PlayerStatistics.Assists.SetValue(playerKills);
-        }
+        var findedLine = _playerLinesList.Find(playerGameStatistics => PlayerStatisticsFinder(playerGameStatistics, player));
+        var assists = findedLine.PlayerStatistics.Assists.GetValue() + 1;
+        findedLine.PlayerStatistics.Assists.SetValue(assists);
+    }
+
+    public void AddDeathToPlayer(Player player)
+    {
+        var findedLine = _playerLinesList.Find(playerGameStatistics => PlayerStatisticsFinder(playerGameStatistics, player));
+        var deaths = findedLine.PlayerStatistics.Deaths.GetValue() + 1;
+        findedLine.PlayerStatistics.Deaths.SetValue(deaths);
+    }
+
+    public override void OnPlayerEnteredRoom(Player newPlayer)
+    {
+        AddGameStatistics(newPlayer);
+    }
+
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        ClearGameStatistics(otherPlayer);
     }
 }

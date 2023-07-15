@@ -3,15 +3,16 @@ using UnityEngine;
 [RequireComponent(typeof(Collider))]
 public class SpawnPoint : MonoBehaviour
 {
-    public ReactiveProperty<bool> SpawnPointClosed = new(false);
+    private ReactiveProperty<bool> _spawnPointOccupied = new(false);
+    public bool IsOccupied { get => _spawnPointOccupied.Value; set => _spawnPointOccupied.Value = value; }
 
-    private void OnCollisionStay(Collision collision)
+    private void OnTriggerStay(Collider other)
     {
-        if (collision.gameObject.TryGetComponent(out PlayerController player)) SpawnPointClosed?.SetValue(true);
+        if (other.gameObject.TryGetComponent(out PlayerController player)) IsOccupied = true;
     }
 
-    private void OnCollisionExit(Collision collision)
+    private void OnTriggerExit(Collider other)
     {
-        if (collision.gameObject.TryGetComponent(out PlayerController player)) SpawnPointClosed?.SetValue(false);
+        if (other.gameObject.TryGetComponent(out PlayerController player)) IsOccupied = false;
     }
 }

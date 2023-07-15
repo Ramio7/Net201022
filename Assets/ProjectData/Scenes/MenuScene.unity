@@ -1892,6 +1892,7 @@ GameObject:
   - component: {fileID: 483532579}
   - component: {fileID: 483532581}
   - component: {fileID: 483532580}
+  - component: {fileID: 483532582}
   m_Layer: 0
   m_Name: Panel
   m_TagString: Untagged
@@ -1960,6 +1961,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 483532578}
   m_CullTransparentMesh: 1
+--- !u!114 &483532582
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 483532578}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b577bbffc19649478251b562fae2897, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _playerList: {fileID: 825279914}
 --- !u!1 &513999618
 GameObject:
   m_ObjectHideFlags: 0
@@ -3508,7 +3522,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: -35465.484, y: -146893.89}
+  m_AnchoredPosition: {x: -36832.508, y: -155443.89}
   m_SizeDelta: {x: 1900, y: 950}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!23 &802318176
@@ -5238,6 +5252,7 @@ GameObject:
   - component: {fileID: 1194292246}
   - component: {fileID: 1194292245}
   - component: {fileID: 1194292244}
+  - component: {fileID: 1194292247}
   m_Layer: 0
   m_Name: LobbyList
   m_TagString: Untagged
@@ -5335,6 +5350,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1194292242}
   m_CullTransparentMesh: 1
+--- !u!114 &1194292247
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1194292242}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b043c6f1a0124dc4785a2a81d68f0010, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _roomListContainerTransform: {fileID: 802318174}
+  _roomInfoButtonPrefab: {fileID: 5488995384172735349, guid: e69d03b6a0d986546b7b47cc532aa2a0, type: 3}
 --- !u!1 &1213341603
 GameObject:
   m_ObjectHideFlags: 0
@@ -8781,7 +8810,7 @@ MonoBehaviour:
   _roomPropertiesCanvas: {fileID: 40747337}
   _roomNameInputToCreate: {fileID: 1892746115}
   _createRoomInPropertiesButton: {fileID: 928892921}
-  _backToLobbyButton: {fileID: 928892921}
+  _backToLobbyButton: {fileID: 1160035377}
   _privateRoomToggle: {fileID: 970500096}
   _roomCanvas: {fileID: 111635928}
   _startGameButton: {fileID: 621248425}

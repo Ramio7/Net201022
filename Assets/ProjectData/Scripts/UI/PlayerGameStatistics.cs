@@ -1,8 +1,9 @@
 using Photon.Pun;
+using Photon.Realtime;
 using TMPro;
 using UnityEngine;
 
-public class PlayerGameStatistics: MonoBehaviourPunCallbacks, IPunObservable
+public class PlayerGameStatistics: MonoBehaviour, IPunObservable
 {
     public struct GameStatistics
     {
@@ -26,9 +27,15 @@ public class PlayerGameStatistics: MonoBehaviourPunCallbacks, IPunObservable
         PlayerStatistics.Kills.OnValueChanged += SetPlayerKills;
         PlayerStatistics.Assists.OnValueChanged += SetPlayerAssists;
         PlayerStatistics.Deaths.OnValueChanged += SetPlayerDeaths;
-        StartPlayerStatistics();
     }
 
+    private void OnDestroy()
+    {
+        PlayerStatistics.Name.OnValueChanged -= SetPlayerName;
+        PlayerStatistics.Kills.OnValueChanged -= SetPlayerKills;
+        PlayerStatistics.Assists.OnValueChanged -= SetPlayerAssists;
+        PlayerStatistics.Deaths.OnValueChanged -= SetPlayerDeaths;
+    }
     private void InitPLayerStatistics()
     {
         PlayerStatistics = new()
@@ -40,9 +47,9 @@ public class PlayerGameStatistics: MonoBehaviourPunCallbacks, IPunObservable
         };
     }
 
-    private void StartPlayerStatistics()
+    public void StartPlayerStatistics(Player player)
     {
-        PlayerStatistics.Name.SetValue(PhotonNetwork.LocalPlayer.NickName);
+        PlayerStatistics.Name.SetValue(player.NickName);
         PlayerStatistics.Kills.SetValue(0);
         PlayerStatistics.Assists.SetValue(0);
         PlayerStatistics.Deaths.SetValue(0);
@@ -57,21 +64,15 @@ public class PlayerGameStatistics: MonoBehaviourPunCallbacks, IPunObservable
     {
         if (stream.IsWriting)
         {
-            var kills = PlayerStatistics.Kills.GetValue();
-            var assisits = PlayerStatistics.Assists.GetValue();
-            var deaths = PlayerStatistics.Deaths.GetValue();
-            stream.SendNext(kills);
-            stream.SendNext(assisits);
-            stream.SendNext(deaths);
+            stream.SendNext(PlayerStatistics.Kills.Value);
+            stream.SendNext(PlayerStatistics.Assists.Value);
+            stream.SendNext(PlayerStatistics.Deaths.Value);
         }
         else
         {
-            var kills = (int)stream.ReceiveNext();
-            var assists = (int)stream.ReceiveNext();
-            var deaths = (int)stream.ReceiveNext();
-            PlayerStatistics.Kills.SetValue(kills);
-            PlayerStatistics.Assists.SetValue(assists);
-            PlayerStatistics.Deaths.SetValue(deaths);
+            PlayerStatistics.Kills.Value = (int)stream.ReceiveNext();
+            PlayerStatistics.Assists.Value = (int)stream.ReceiveNext();
+            PlayerStatistics.Deaths.Value = (int)stream.ReceiveNext();
         }
     }
 }

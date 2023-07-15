@@ -14,10 +14,10 @@ public class LevelView : MonoBehaviourPunCallbacks, IPunObservable
         var freeSpawns = new List<SpawnPoint>();
         foreach (var spawnPoint in _spawnPoints)
         {
-            if (!spawnPoint.SpawnPointClosed.GetValue()) freeSpawns.Add(spawnPoint);
+            if (!spawnPoint.IsOccupied) freeSpawns.Add(spawnPoint);
         }
         var index = UnityEngine.Random.Range(0, freeSpawns.Count);
-        _spawnPoints[index].SpawnPointClosed.SetValue(true);
+        _spawnPoints[index].IsOccupied = true;
         OnSpawnPointGranted?.Invoke(_spawnPoints[index].transform.position);
     }
 
@@ -25,11 +25,17 @@ public class LevelView : MonoBehaviourPunCallbacks, IPunObservable
     {
         if (stream.IsWriting)
         {
-            stream.SendNext(_spawnPoints);
+            foreach (var spawnPoint in _spawnPoints)
+            {
+                stream.SendNext(spawnPoint.IsOccupied);
+            }
         }
         else
         {
-            _spawnPoints = (List<SpawnPoint>)stream.ReceiveNext();
+            foreach (var spawnPoint in _spawnPoints)
+            {
+                spawnPoint.IsOccupied = (bool)stream.ReceiveNext();
+            }
         }
     }
 }

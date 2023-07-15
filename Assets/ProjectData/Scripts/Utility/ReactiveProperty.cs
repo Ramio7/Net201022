@@ -11,6 +11,8 @@ public class ReactiveProperty<T>
         _value = value;
     }
 
+    public T Value { get => _value; set => _value = value; }
+
     public void SetValue(T value)
     {
         if (_value.ToString() == value.ToString()) return;

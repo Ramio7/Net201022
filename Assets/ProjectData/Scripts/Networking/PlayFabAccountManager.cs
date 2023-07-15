@@ -87,12 +87,12 @@ public class PlayFabAccountManager : MonoBehaviour
             _request,
             result =>
             {
-                OnLoginMessageUpdate.Invoke($"{result.PlayFabId} connected to PlayFab", Color.green);
+                OnLoginMessageUpdate?.Invoke($"{result.PlayFabId} connected to PlayFab", Color.green);
             },
             error =>
             {
                 OnError();
-                OnLoginMessageUpdate.Invoke(error.GenerateErrorReport(), Color.red);
+                OnLoginMessageUpdate?.Invoke(error.GenerateErrorReport(), Color.red);
             });
     }
 

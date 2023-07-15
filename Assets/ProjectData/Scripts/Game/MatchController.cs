@@ -24,14 +24,11 @@ public class MatchController : IDisposable
         Instance = this;
         _matchTime.SetValue(matchTime);
         StartMatchTimer();
-        GameStatisticsPanelController.Instance.OnPlayerLeftRoom += GetPlayerEndGameStatistics;
-        GameStatisticsPanelController.Instance.OnGameEnd += GetEndGameStatistics;
     }
 
     public void Dispose()
     {
-        GameStatisticsPanelController.Instance.OnPlayerLeftRoom -= GetPlayerEndGameStatistics;
-        GameStatisticsPanelController.Instance.OnGameEnd -= GetEndGameStatistics;
+
     }
 
     private async void StartMatchTimer()
