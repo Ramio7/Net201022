@@ -80,9 +80,7 @@ public class MenuUIPresenter : MonoBehaviour
 
         SubscribeEvents();
         RegisterCanvas();
-
-        if (PhotonNetwork.IsConnected) SetPhotonLogInCanvasActive();
-        else SetMainMenuCanvasActive();
+        SetMainMenuCanvasActive();
 
         _playFabAccountManager.OnCreateAccountMessageUpdate += UpdateCreateAccountMessage;
         _playFabAccountManager.OnLoginMessageUpdate += UpdateLoginMessage;
@@ -163,7 +161,7 @@ public class MenuUIPresenter : MonoBehaviour
         _inputFields.Add(_passwordLoginInput);
 
         _logInAccountButton.onClick.AddListener(_playFabAccountManager.ConnectPlayFab);
-        _logInAccountButton.onClick.AddListener(LoadGameScene);
+        _logInAccountButton.onClick.AddListener(_photonManager.ConnectPhoton);
         _buttons.Add(_logInAccountButton);
 
         _backToMenuButton.onClick.AddListener(SetMainMenuCanvasActive);
@@ -253,7 +251,7 @@ public class MenuUIPresenter : MonoBehaviour
     {
         if (PlayFabClientAPI.IsClientLoggedIn())
         {
-            LoadGameScene();
+            _photonManager.ConnectPhoton();
             return;
         }
 

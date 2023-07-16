@@ -64,5 +64,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _photonUsername: 
-  _roomname: 
+  _roomname: game
   _roomListUpdateDelay: 300

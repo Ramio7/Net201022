@@ -1,14 +1,16 @@
 using Photon.Pun;
 using Photon.Realtime;
+using PlayFab;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class PhotonManager : MonoBehaviourPunCallbacks
 {
     [SerializeField] private string _photonUsername;
-    [SerializeField] private string _roomname;
+    [SerializeField] private string _roomname = "game";
     [SerializeField] private int _roomListUpdateDelay;
 
     private ClientState _currentState;
@@ -44,8 +46,10 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         }
     }
 
-    public void ConnectPhoton()
+    public async void ConnectPhoton()
     {
+        await Task.Run(() => WaitPlayFabLogin());
+
         PhotonNetwork.AutomaticallySyncScene = true;
 
         if (PhotonNetwork.IsConnected)
@@ -58,9 +62,14 @@ public class PhotonManager : MonoBehaviourPunCallbacks
             PhotonNetwork.NickName = _photonUsername;
             PhotonNetwork.ConnectUsingSettings();
             PhotonNetwork.GameVersion = PhotonNetwork.AppVersion;
-            PhotonNetwork.JoinLobby();
             PhotonNetwork.AddCallbackTarget(this);
         }
+    }
+
+    private Task WaitPlayFabLogin()
+    {
+        while (!PlayFabClientAPI.IsClientLoggedIn()) Task.Delay(100);
+        return Task.FromResult(0);
     }
 
     public void DisconnectPhoton()
@@ -74,7 +83,6 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         {
             IsOpen = true,
             IsVisible = RoomIsPrivate,
-            MaxPlayers = 9,
         });
     }
 
@@ -103,6 +111,12 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         PhotonNetwork.LoadLevel("GameMapScene");
     }
 
+    public override void OnJoinRoomFailed(short returnCode, string message)
+    {
+        Debug.Log($"{returnCode}: {message}");
+        JoinRandomRoom();
+    }
+
     public override void OnJoinRandomFailed(short returnCode, string message)
     {
         CreateRoom();
@@ -115,6 +129,7 @@ public class PhotonManager : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
+        if (PhotonNetwork.LocalPlayer.IsMasterClient) StartTheGame();
         OnPlayerJoined?.Invoke(PhotonNetwork.LocalPlayer);
     }
 
@@ -132,5 +147,15 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
         OnPlayerLeft?.Invoke(otherPlayer);
+    }
+
+    public override void OnConnectedToMaster()
+    {
+        PhotonNetwork.JoinLobby();
+    }
+
+    public override void OnJoinedLobby()
+    {
+        JoinRoom(_roomname);
     }
 }
