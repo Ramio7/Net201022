@@ -279,6 +279,7 @@ GameObject:
   - component: {fileID: 2611085330058337732}
   - component: {fileID: 2611085330058337735}
   - component: {fileID: 2611085330058337734}
+  - component: {fileID: 6032461652120848068}
   m_Layer: 0
   m_Name: OuterWall (4)
   m_TagString: Untagged
@@ -364,6 +365,28 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &6032461652120848068
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2611085330058337728}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &2611085330121504338
 GameObject:
   m_ObjectHideFlags: 0
@@ -376,6 +399,7 @@ GameObject:
   - component: {fileID: 2611085330121504342}
   - component: {fileID: 2611085330121504337}
   - component: {fileID: 2611085330121504336}
+  - component: {fileID: 2085279481190434968}
   m_Layer: 0
   m_Name: InterWall
   m_TagString: Untagged
@@ -461,6 +485,28 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &2085279481190434968
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2611085330121504338}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &2611085330397662842
 GameObject:
   m_ObjectHideFlags: 0
@@ -473,6 +519,7 @@ GameObject:
   - component: {fileID: 2611085330397662846}
   - component: {fileID: 2611085330397662841}
   - component: {fileID: 2611085330397662840}
+  - component: {fileID: 2499953240928429935}
   m_Layer: 0
   m_Name: InterWall (1)
   m_TagString: Untagged
@@ -558,6 +605,28 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &2499953240928429935
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2611085330397662842}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &2611085330644308507
 GameObject:
   m_ObjectHideFlags: 0
@@ -570,6 +639,7 @@ GameObject:
   - component: {fileID: 2611085330644308511}
   - component: {fileID: 2611085330644308510}
   - component: {fileID: 2611085330644308505}
+  - component: {fileID: 8293651843816112555}
   m_Layer: 0
   m_Name: OuterWall
   m_TagString: Untagged
@@ -655,6 +725,28 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &8293651843816112555
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2611085330644308507}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &2611085330719029110
 GameObject:
   m_ObjectHideFlags: 0
@@ -667,6 +759,7 @@ GameObject:
   - component: {fileID: 2611085330719029098}
   - component: {fileID: 2611085330719029109}
   - component: {fileID: 2611085330719029108}
+  - component: {fileID: 2048543996324898923}
   m_Layer: 0
   m_Name: OuterWall (1)
   m_TagString: Untagged
@@ -752,6 +845,28 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &2048543996324898923
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2611085330719029110}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &2611085330824176074
 GameObject:
   m_ObjectHideFlags: 0
@@ -764,6 +879,7 @@ GameObject:
   - component: {fileID: 2611085330824176078}
   - component: {fileID: 2611085330824176073}
   - component: {fileID: 2611085330824176072}
+  - component: {fileID: 5112194577595401349}
   m_Layer: 0
   m_Name: InterWall (5)
   m_TagString: Untagged
@@ -849,6 +965,28 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &5112194577595401349
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2611085330824176074}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &2611085330904624003
 GameObject:
   m_ObjectHideFlags: 0
@@ -861,6 +999,7 @@ GameObject:
   - component: {fileID: 2611085330904624007}
   - component: {fileID: 2611085330904624006}
   - component: {fileID: 2611085330904624001}
+  - component: {fileID: 6031952057168823535}
   m_Layer: 0
   m_Name: InterWall
   m_TagString: Untagged
@@ -946,6 +1085,28 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &6031952057168823535
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2611085330904624003}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &2611085330921869846
 GameObject:
   m_ObjectHideFlags: 0
@@ -958,6 +1119,7 @@ GameObject:
   - component: {fileID: 2611085330921869834}
   - component: {fileID: 2611085330921869845}
   - component: {fileID: 2611085330921869844}
+  - component: {fileID: 1463120359940475534}
   m_Layer: 0
   m_Name: InterWall (3)
   m_TagString: Untagged
@@ -1043,6 +1205,28 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1463120359940475534
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2611085330921869846}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &2611085330954252126
 GameObject:
   m_ObjectHideFlags: 0
@@ -1055,6 +1239,7 @@ GameObject:
   - component: {fileID: 2611085330954252114}
   - component: {fileID: 2611085330954252125}
   - component: {fileID: 2611085330954252124}
+  - component: {fileID: 1147513156779024493}
   m_Layer: 0
   m_Name: InterWall
   m_TagString: Untagged
@@ -1140,6 +1325,28 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1147513156779024493
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2611085330954252126}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &2611085331010301273
 GameObject:
   m_ObjectHideFlags: 0
@@ -1152,6 +1359,7 @@ GameObject:
   - component: {fileID: 2611085331010301277}
   - component: {fileID: 2611085331010301276}
   - component: {fileID: 2611085331010301279}
+  - component: {fileID: 1280363744446363035}
   m_Layer: 0
   m_Name: InterWall
   m_TagString: Untagged
@@ -1237,6 +1445,28 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1280363744446363035
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2611085331010301273}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &2611085331038769655
 GameObject:
   m_ObjectHideFlags: 0
@@ -1249,6 +1479,7 @@ GameObject:
   - component: {fileID: 2611085331038769643}
   - component: {fileID: 2611085331038769642}
   - component: {fileID: 2611085331038769653}
+  - component: {fileID: 6234794792672712381}
   m_Layer: 0
   m_Name: OuterWall (3)
   m_TagString: Untagged
@@ -1334,6 +1565,28 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &6234794792672712381
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2611085331038769655}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &2611085331225492668
 GameObject:
   m_ObjectHideFlags: 0
@@ -1346,6 +1599,7 @@ GameObject:
   - component: {fileID: 2611085331225492656}
   - component: {fileID: 2611085331225492659}
   - component: {fileID: 2611085331225492658}
+  - component: {fileID: 3526094187011363445}
   m_Layer: 0
   m_Name: InterWall
   m_TagString: Untagged
@@ -1431,6 +1685,28 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &3526094187011363445
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2611085331225492668}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &2611085331304707531
 GameObject:
   m_ObjectHideFlags: 0
@@ -1519,6 +1795,7 @@ GameObject:
   - component: {fileID: 2611085331323278318}
   - component: {fileID: 2611085331323278313}
   - component: {fileID: 2611085331323278312}
+  - component: {fileID: 1410035945689626151}
   m_Layer: 0
   m_Name: OuterWall
   m_TagString: Untagged
@@ -1604,6 +1881,28 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1410035945689626151
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2611085331323278314}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &2611085331336607169
 GameObject:
   m_ObjectHideFlags: 0
@@ -1616,6 +1915,7 @@ GameObject:
   - component: {fileID: 2611085331336607173}
   - component: {fileID: 2611085331336607172}
   - component: {fileID: 2611085331336607175}
+  - component: {fileID: 899219257315209496}
   m_Layer: 0
   m_Name: Floor (1)
   m_TagString: Untagged
@@ -1701,6 +2001,28 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &899219257315209496
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2611085331336607169}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &2611085331344309285
 GameObject:
   m_ObjectHideFlags: 0
@@ -1713,6 +2035,7 @@ GameObject:
   - component: {fileID: 2611085331344309273}
   - component: {fileID: 2611085331344309272}
   - component: {fileID: 2611085331344309275}
+  - component: {fileID: 1732479094151977403}
   m_Layer: 0
   m_Name: InterWall (6)
   m_TagString: Untagged
@@ -1798,6 +2121,28 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1732479094151977403
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2611085331344309285}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &2611085331838562504
 GameObject:
   m_ObjectHideFlags: 0
@@ -1810,6 +2155,7 @@ GameObject:
   - component: {fileID: 2611085331838562508}
   - component: {fileID: 2611085331838562511}
   - component: {fileID: 2611085331838562510}
+  - component: {fileID: 2271080346705619336}
   m_Layer: 0
   m_Name: OuterWall
   m_TagString: Untagged
@@ -1895,6 +2241,28 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &2271080346705619336
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2611085331838562504}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &2611085331885245955
 GameObject:
   m_ObjectHideFlags: 0
@@ -1907,6 +2275,7 @@ GameObject:
   - component: {fileID: 2611085331885245959}
   - component: {fileID: 2611085331885245958}
   - component: {fileID: 2611085331885245953}
+  - component: {fileID: 3209646326836949679}
   m_Layer: 0
   m_Name: Floor
   m_TagString: Untagged
@@ -1992,6 +2361,28 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &3209646326836949679
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2611085331885245955}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &2611085331944819908
 GameObject:
   m_ObjectHideFlags: 0
@@ -2004,6 +2395,7 @@ GameObject:
   - component: {fileID: 2611085331944819896}
   - component: {fileID: 2611085331944819899}
   - component: {fileID: 2611085331944819898}
+  - component: {fileID: 9196527603230192060}
   m_Layer: 0
   m_Name: OuterWall
   m_TagString: Untagged
@@ -2089,6 +2481,28 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &9196527603230192060
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2611085331944819908}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &2611085332002562291
 GameObject:
   m_ObjectHideFlags: 0
@@ -2101,6 +2515,7 @@ GameObject:
   - component: {fileID: 2611085332002562295}
   - component: {fileID: 2611085332002562294}
   - component: {fileID: 2611085332002562289}
+  - component: {fileID: 4196067343204643411}
   m_Layer: 0
   m_Name: InterWall
   m_TagString: Untagged
@@ -2186,6 +2601,28 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &4196067343204643411
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2611085332002562291}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &2611085332042477589
 GameObject:
   m_ObjectHideFlags: 0
@@ -2198,6 +2635,7 @@ GameObject:
   - component: {fileID: 2611085332042477577}
   - component: {fileID: 2611085332042477576}
   - component: {fileID: 2611085332042477579}
+  - component: {fileID: 6892647361808438551}
   m_Layer: 0
   m_Name: InterWall (2)
   m_TagString: Untagged
@@ -2283,6 +2721,28 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &6892647361808438551
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2611085332042477589}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &3699778914223573078
 GameObject:
   m_ObjectHideFlags: 0

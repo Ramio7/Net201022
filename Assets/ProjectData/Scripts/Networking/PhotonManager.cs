@@ -30,11 +30,6 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     {
         DontDestroyOnLoad(this);
         Instance = this;
-        if (PhotonNetwork.IsConnectedAndReady)
-        {
-            var player = PhotonNetwork.LocalPlayer;
-            PhotonUsername = player.NickName;
-        }
     }
 
     private void Update()
@@ -136,6 +131,7 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     public override void OnLeftRoom()
     {
         OnPlayerLeft?.Invoke(PhotonNetwork.LocalPlayer);
+        DisconnectPhoton();
         if (SceneManager.GetActiveScene().name != "MenuScene") SceneManager.LoadScene("MenuScene");
     }
 

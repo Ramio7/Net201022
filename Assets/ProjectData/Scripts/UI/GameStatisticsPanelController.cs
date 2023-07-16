@@ -1,6 +1,5 @@
 using Photon.Pun;
 using Photon.Realtime;
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,16 +10,22 @@ public class GameStatisticsPanelController : MonoBehaviourPunCallbacks
 
     private List<PlayerGameStatistics> _playerLinesList = new();
 
-    public static event Action<List<PlayerGameStatistics>> OnGameEnd;
+    public static GameStatisticsPanelController Instance;
 
     private void Awake()
     {
+        Instance = this;
         PhotonNetwork.AddCallbackTarget(this);
         var playerList = PhotonNetwork.CurrentRoom.Players;
         foreach (var player in playerList)
         {
             AddGameStatistics(player.Value);
+            if (PhotonNetwork.LocalPlayer == player.Value)
+            {
+                PlayerController.Instance.OnPlayerIsDeadForStats += SetPLayerStatisticsOnKill;
+            }
         }
+        MatchController.Instance.OnTimeExpired += SendPlayerStatistics;
     }
 
     private void AddGameStatistics(Player player)
@@ -30,6 +35,10 @@ public class GameStatisticsPanelController : MonoBehaviourPunCallbacks
         lineGameObject.TryGetComponent<PlayerGameStatistics>(out var playerGameStatistics);
         playerGameStatistics.StartPlayerStatistics(player);
         _playerLinesList.Add(playerGameStatistics);
+        if (PhotonNetwork.LocalPlayer == player)
+        {
+            PlayerController.Instance.OnPlayerIsDeadForStats += SetPLayerStatisticsOnKill;
+        }
     }
 
     private void ClearGameStatistics(Player player)
@@ -40,28 +49,37 @@ public class GameStatisticsPanelController : MonoBehaviourPunCallbacks
 
     private static bool PlayerStatisticsFinder(PlayerGameStatistics playerGameStatistics, Player player)
     {
-        return playerGameStatistics.PlayerStatistics.Name.GetValue() == player.NickName;
+        return playerGameStatistics.PlayerStatistics.Name.Value == player.NickName;
+    }
+
+    private void SetPLayerStatisticsOnKill(Player killer, Player asistant, Player victim)
+    {
+        AddKillToPlayer(killer);
+        AddAssistToPlayer(asistant);
+        AddDeathToPlayer(victim);
     }
 
     public void AddKillToPlayer(Player player)
     {
         var findedLine = _playerLinesList.Find(playerGameStatistics => PlayerStatisticsFinder(playerGameStatistics, player));
-        var kills = findedLine.PlayerStatistics.Kills.Value + 1;
-        findedLine.PlayerStatistics.Kills.SetValue(kills);
+        findedLine.PlayerStatistics.Kills.Value += 1;
     }
 
     public void AddAssistToPlayer(Player player)
     {
         var findedLine = _playerLinesList.Find(playerGameStatistics => PlayerStatisticsFinder(playerGameStatistics, player));
-        var assists = findedLine.PlayerStatistics.Assists.GetValue() + 1;
-        findedLine.PlayerStatistics.Assists.SetValue(assists);
+        findedLine.PlayerStatistics.Assists.Value += 1;
     }
 
     public void AddDeathToPlayer(Player player)
     {
         var findedLine = _playerLinesList.Find(playerGameStatistics => PlayerStatisticsFinder(playerGameStatistics, player));
-        var deaths = findedLine.PlayerStatistics.Deaths.GetValue() + 1;
-        findedLine.PlayerStatistics.Deaths.SetValue(deaths);
+        findedLine.PlayerStatistics.Deaths.Value += 1;
+    }
+
+    private void SendPlayerStatistics()
+    {
+        foreach (var line in _playerLinesList) MatchController.Instance.GameStats.Add(line);
     }
 
     public override void OnPlayerEnteredRoom(Player newPlayer)

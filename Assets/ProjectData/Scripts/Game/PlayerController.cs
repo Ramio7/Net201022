@@ -1,4 +1,5 @@
 using Photon.Pun;
+using Photon.Realtime;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -22,6 +23,8 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     private float _scroll;
     private bool _isFiring;
     private float _health;
+    private Player _killer;
+    private Player _assistant;
 
     public ReactiveProperty<bool> IsFiring = new(false);
     public ReactiveProperty<bool> IsDead = new(false);
@@ -30,10 +33,13 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     public List<MeshRenderer> MeshList { get; private set; }
 
     public static GameObject LocalPlayerInstance;
+    public static Player Player;
+    public static PlayerController Instance;
 
     public event Action<float> OnPlayerHpValueChanged;
     public event Action<int, int> OnPlayerAmmoChanged;
     public event Action OnPlayerIsDead;
+    public event Action<Player, Player, Player> OnPlayerIsDeadForStats;
 
     public float Max_Health { get; } = 100f;
     public int Max_Bullets { get; } = 30;
@@ -43,14 +49,17 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
         if (photonView.IsMine)
         {
             LocalPlayerInstance = gameObject;
+            Player = photonView.Owner;
+            Instance = this;
         }
-        _rigidbody = gameObject.GetComponent<Rigidbody>();
     }
 
     private void Start()
     {
         if (!photonView.IsMine && !PhotonNetwork.IsConnected) return;
 
+        _rigidbody = gameObject.GetComponent<Rigidbody>();
+        _rigidbody.inertiaTensor = Vector3.zero;
         IsFiring.OnValueChanged += Fire;
         IsFiring.OnValueChanged += FireFieldChange;
         Health.OnValueChanged += HealthFieldChange;
@@ -67,8 +76,8 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     {
         if (!photonView.IsMine) return;
 
-        if (Input.GetMouseButton(0)) IsFiring.SetValue(true);
-        else IsFiring.SetValue(false);
+        if (Input.GetMouseButton(0)) IsFiring.Value =true;
+        else IsFiring.Value = false;
 
         if (Input.GetKey(KeyCode.W)) _axisVertical = 1;
         else if (Input.GetKey(KeyCode.S)) _axisVertical = -1;
@@ -95,7 +104,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (photonView.IsMine) return;
+        if (!photonView.IsMine) return;
 
         if (collision.gameObject.TryGetComponent(out BulletDiploma bullet)) HealthCheck(bullet);
     }
@@ -124,7 +133,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     {
         if (!isFiring) return;
 
-        if (BulletsCount.GetValue() == 0)
+        if (BulletsCount.Value == 0)
         {
             await Reload();
             return;
@@ -136,9 +145,13 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     {
         Health.Value -= bullet.BulletDamage;
         OnPlayerHpValueChanged?.Invoke(Health.Value);
-        if (Health.GetValue() <= 0)
+        _assistant = bullet.GetComponent<PhotonView>().Owner;
+        if (Health.Value <= 0)
         {
+            _killer = bullet.GetComponent<PhotonView>().Owner;
+            if (_killer == _assistant) _assistant = null;
             gameObject.SetActive(false);
+            OnPlayerIsDeadForStats?.Invoke(_killer, _assistant, Player);
             OnPlayerIsDead?.Invoke();
         }
     }
@@ -148,18 +161,16 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
         await Task.Run(() => WaitReload());
         BulletsCount.Value = Max_Bullets;
         OnPlayerAmmoChanged?.Invoke(BulletsCount.Value, Max_Bullets);
-        IsFiring.SetValue(false);
+        IsFiring.Value = false;
     }
 
     private async Task StartBullet()
     {
         var bullet = PhotonNetwork.Instantiate(_bulletPrefab.name, _bulletSpawnPoint.position, _bulletSpawnPoint.rotation);
-        if (bullet.TryGetComponent(out PhotonView bulletPhotonView)) bulletPhotonView.TransferOwnership(PhotonNetwork.LocalPlayer);
-        bullet.transform.SetParent(null);
         BulletsCount.Value -= 1;
         OnPlayerAmmoChanged?.Invoke(BulletsCount.Value, Max_Bullets);
         await Task.Run(() => FireRateWaiting());
-        IsFiring.SetValue(false);
+        IsFiring.Value = false;
     }
 
     private Task FireRateWaiting() => Task.Delay(_fireRate);

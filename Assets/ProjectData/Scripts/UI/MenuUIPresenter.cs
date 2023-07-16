@@ -84,6 +84,7 @@ public class MenuUIPresenter : MonoBehaviour
 
         _playFabAccountManager.OnCreateAccountMessageUpdate += UpdateCreateAccountMessage;
         _playFabAccountManager.OnLoginMessageUpdate += UpdateLoginMessage;
+        _photonManager.OnClientStateChanged += UpdateLoginMessage;
     }
 
     private void RegisterCanvas()
@@ -119,6 +120,7 @@ public class MenuUIPresenter : MonoBehaviour
 
         _playFabAccountManager.OnCreateAccountMessageUpdate -= UpdateCreateAccountMessage;
         _playFabAccountManager.OnLoginMessageUpdate -= UpdateLoginMessage;
+        _photonManager.OnClientStateChanged -= UpdateLoginMessage;
     }
 
     private void SubcribeMainMenuEvents()
@@ -311,11 +313,11 @@ public class MenuUIPresenter : MonoBehaviour
         Debug.Log(_loginMessage.ToString());
     }
 
+    private void UpdateLoginMessage(string message) => _loginMessage.text = message;
+
     private void UpdatePhotonClientStateOutput(string state)
     {
         _photonLoginMessage.text = state;
         Debug.Log(state);
     }
-
-    private void LoadGameScene() => SceneManager.LoadScene(2);
 }

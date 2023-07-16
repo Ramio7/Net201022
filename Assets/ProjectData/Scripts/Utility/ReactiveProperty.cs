@@ -11,14 +11,17 @@ public class ReactiveProperty<T>
         _value = value;
     }
 
-    public T Value { get => _value; set => _value = value; }
-
-    public void SetValue(T value)
-    {
-        if (_value.ToString() == value.ToString()) return;
-        _value = value;
-        OnValueChanged?.Invoke(value);
+    public T Value 
+    { 
+        get 
+        { 
+            return _value; 
+        }
+        set 
+        { 
+            if (_value.ToString() == value.ToString()) return;
+            _value = value;
+            OnValueChanged?.Invoke(value);
+        } 
     }
-
-    public T GetValue() => _value;
 }

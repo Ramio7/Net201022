@@ -26,7 +26,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5441440448075268714}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -24.970877, y: -44.053516, z: 71.03402}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -45,9 +45,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fe2a9762c6446f4d9d13faa1b470d63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _playerPrefab: {fileID: 629120087050306807, guid: 42fd8c13d8f758741b1f6d3358ce2edc, type: 3}
+  _playerPrefab: {fileID: 8268446628686846662, guid: 797767f5d9ba0f84f9786983ef209f25, type: 3}
   _uiPrefab: {fileID: 5834125787252331865, guid: 03acab24ec43ee043b0d5115fcddebef, type: 3}
-  _levelView: {fileID: 9203085176014837753, guid: 2fd98346428996f44a440728d9c4d6db, type: 3}
+  _levelView: {fileID: 0}
 --- !u!114 &255692899404555634
 MonoBehaviour:
   m_ObjectHideFlags: 0

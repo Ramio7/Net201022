@@ -1,14 +1,20 @@
+using Photon.Pun;
+using Photon.Realtime;
 using PlayFab;
 using PlayFab.ClientModels;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Debug = UnityEngine.Debug;
+using TMPro;
+using UnityEngine;
 
-public class MatchController : IDisposable
+public class MatchController : MonoBehaviourPunCallbacks, IPunObservable
 {
-    private ReactiveProperty<int> _matchTime = new(-1);
+    [SerializeField, Tooltip("Match time in seconds")] private float _matchTimeTotal;
+    [SerializeField] private TMP_Text _timerText;
+    private ReactiveProperty<float> _matchTime = new(1);
     private List<PlayerGameStatistics> _gameStats = new();
+    private float _endTime;
 
     public event Action OnTimeExpired;
 
@@ -18,43 +24,34 @@ public class MatchController : IDisposable
     public const int Assist_XP_Reward = 10;
 
     public static MatchController Instance { get; private set; }
+    public List<PlayerGameStatistics> GameStats { get => _gameStats; set => _gameStats = value; }
 
-    public MatchController(int matchTime)
+    public override void OnEnable()
     {
         Instance = this;
-        _matchTime.SetValue(matchTime);
-        StartMatchTimer();
+        _matchTime.Value = _matchTimeTotal;
+        _matchTime.OnValueChanged += SetMatchTimerValue;
+        _endTime = Time.time + _matchTimeTotal;
     }
 
-    public void Dispose()
+    private void FixedUpdate()
     {
-
+        _matchTime.Value = _endTime - Time.time;
     }
 
-    private async void StartMatchTimer()
+    private void SetMatchTimerValue(float timeLeft)
     {
-        await Task.Run(() => Countdown());
-        OnTimeExpired?.Invoke();
-    }
-
-    private async Task Countdown()
-    {
-        while (_matchTime.GetValue() > 0)
+        if (_matchTime.Value <= 0)
         {
-            await Task.Run(() => TimerTick());
-            var newTime = _matchTime.GetValue() - 1;
-            _matchTime.SetValue(newTime);
+            OnTimeExpired?.Invoke();
+            GrantRewardsForPlayers();
+            return;
         }
-        GrantRewardsForPlayers();
-    }
-
-    private Task TimerTick() => Task.Delay(1000);
-
-    private void GetPlayerEndGameStatistics(PlayerGameStatistics playerStats) => _gameStats.Add(playerStats);
-
-    private void GetEndGameStatistics(List<PlayerGameStatistics> gameStatistics)
-    {
-        foreach (var playerStats in gameStatistics) _gameStats.Add(playerStats);
+        var timeInMinutes = timeLeft / 60;
+        var minutesLeft = (int)timeInMinutes;
+        int secondsLeft = (int)((timeInMinutes - minutesLeft) * 60);
+        var secondsLeftFormated = string.Format("{0:d2}", secondsLeft);
+        _timerText.text = string.Format($"{minutesLeft} : {secondsLeftFormated}");
     }
 
     private void GrantRewardsForPlayers()
@@ -64,7 +61,7 @@ public class MatchController : IDisposable
             var stats = playerStats.PlayerStatistics;
             PlayFabClientAPI.GetAccountInfo(new()
             {
-                Username = stats.Name.GetValue(),
+                Username = stats.Name.Value,
             },
             result =>
             {
@@ -84,7 +81,7 @@ public class MatchController : IDisposable
         {
             PlayFabId = result.AccountInfo.PlayFabId,
             VirtualCurrency = "Credits",
-            Amount = stats.Kills.GetValue() * Kill_VC_Reward + stats.Assists.GetValue() * Assist_VC_Reward,
+            Amount = stats.Kills.Value * Kill_VC_Reward + stats.Assists.Value * Assist_VC_Reward,
         },
         result =>
         {
@@ -122,7 +119,7 @@ public class MatchController : IDisposable
             AuthenticationContext = result.Request.AuthenticationContext,
             Data = new Dictionary<string, string>
                     {
-                        { "Experience", (currentPlayerXP + stats.Kills.GetValue() * Kill_XP_Reward + stats.Assists.GetValue() * Assist_XP_Reward).ToString() }
+                        { "Experience", (currentPlayerXP + stats.Kills.Value * Kill_XP_Reward + stats.Assists.Value * Assist_XP_Reward).ToString() }
                     },
             Permission = UserDataPermission.Public,
         },
@@ -134,5 +131,22 @@ public class MatchController : IDisposable
         {
             error.GenerateErrorReport();
         });
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (photonView.IsRoomView && stream.IsWriting)
+        {
+            stream.SendNext(_matchTime.Value);
+        }
+        else
+        {
+            _matchTime.Value = (float)stream.ReceiveNext();
+        }
+    }
+
+    public override void OnPlayerEnteredRoom(Player newPlayer)
+    {
+        base.OnPlayerEnteredRoom(newPlayer);
     }
 }

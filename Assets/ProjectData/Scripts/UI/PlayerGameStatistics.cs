@@ -49,10 +49,10 @@ public class PlayerGameStatistics: MonoBehaviour, IPunObservable
 
     public void StartPlayerStatistics(Player player)
     {
-        PlayerStatistics.Name.SetValue(player.NickName);
-        PlayerStatistics.Kills.SetValue(0);
-        PlayerStatistics.Assists.SetValue(0);
-        PlayerStatistics.Deaths.SetValue(0);
+        PlayerStatistics.Name.Value = player.NickName;
+        PlayerStatistics.Kills.Value = 0;
+        PlayerStatistics.Assists.Value = 0;
+        PlayerStatistics.Deaths.Value = 0;
     }
 
     private void SetPlayerName(string playerName) => _playerName.text = playerName;

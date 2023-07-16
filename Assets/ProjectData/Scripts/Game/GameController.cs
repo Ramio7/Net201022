@@ -19,14 +19,13 @@ public class GameController : MonoBehaviourPunCallbacks
     {
         if (!PhotonNetwork.IsConnected) return;
 
+        _levelView = FindFirstObjectByType<LevelView>();
         _levelView.OnSpawnPointGranted += SetPlayerSpawnPosition;
         _levelView.GetSpawnPoint();
     }
 
     public void Start()
     {
-        if (!photonView.IsMine) return;
-
         if (!PhotonNetwork.IsConnected)
         {
             SceneManager.LoadScene("MenuScene");
@@ -36,26 +35,35 @@ public class GameController : MonoBehaviourPunCallbacks
 
         if (_playerPrefab == null)
         {
-            Debug.LogError("Missing playerPrefab Reference. Please set it up in GameObject 'Game Manager'", this);
+            Debug.LogError("Missing playerPrefab Reference. Please set it up in GameObject 'Game Controller'", this);
         }
         else
         {
-            if (!PhotonNetwork.Instantiate(_uiPrefab.name, Vector3.zero, Quaternion.identity).TryGetComponent(out GameUIPresenter gameUIPresenter))
-                Debug.LogError("GameUIPresenter not attached to UI");
-            _gameUIPresenter = gameUIPresenter;
-
             if (_playerCharacter == null)
             {
-                _playerController = InstantiatePlayerCharacter(_gameUIPresenter);
-                SetPlayerBulletsMaximum(gameUIPresenter, _playerController);
+                _playerController = InstantiatePlayerCharacter();
             }
             else
             {
                 Debug.LogFormat("Ignoring scene load for {0}", SceneManagerHelper.ActiveSceneName);
             }
+
+            if (!PhotonNetwork.Instantiate(_uiPrefab.name, Vector3.zero, Quaternion.identity).TryGetComponent(out GameUIPresenter gameUIPresenter))
+                Debug.LogError("GameUIPresenter not attached to UI");
+            InitGameUI(gameUIPresenter);
+
         }
 
         //ChangePlayerColors();
+    }
+
+    private void InitGameUI(GameUIPresenter gameUIPresenter)
+    {
+        _gameUIPresenter = gameUIPresenter;
+        gameUIPresenter.playerMaxHP = _playerController.Max_Health;
+        _playerController.OnPlayerHpValueChanged += gameUIPresenter.SetPlayerHPSlider;
+        _playerController.OnPlayerAmmoChanged += gameUIPresenter.SetBulletsCounter;
+        SetPlayerBulletsMaximum(gameUIPresenter, _playerController);
     }
 
     private void OnDestroy()
@@ -71,13 +79,10 @@ public class GameController : MonoBehaviourPunCallbacks
         _playerController = null;
     }
 
-    private PlayerController InstantiatePlayerCharacter(GameUIPresenter gameUIPresenter)
+    private PlayerController InstantiatePlayerCharacter()
     {
         _playerCharacter = PhotonNetwork.Instantiate(_playerPrefab.name, _playerSpawnPosition, Quaternion.identity, 0);
-        var playerController = _playerCharacter.GetComponentInChildren<PlayerController>();
-        gameUIPresenter.playerMaxHP = playerController.Max_Health;
-        playerController.OnPlayerHpValueChanged += gameUIPresenter.SetPlayerHPSlider;
-        playerController.OnPlayerAmmoChanged += gameUIPresenter.SetBulletsCounter;
+        _playerCharacter.TryGetComponent<PlayerController>(out var playerController);
         playerController.OnPlayerIsDead += RevivePlayer;
         return playerController;
     }
@@ -143,9 +148,9 @@ public class GameController : MonoBehaviourPunCallbacks
         _playerCharacter.SetActive(true);
     }
 
-    private static void SetPlayerBulletsMaximum(GameUIPresenter _gameUIPresenter, PlayerController _playerController)
+    private static void SetPlayerBulletsMaximum(GameUIPresenter gameUIPresenter, PlayerController playerController)
     {
-        _gameUIPresenter.SetBulletsCounter(_playerController.Max_Bullets, _playerController.Max_Bullets);
+        gameUIPresenter.SetBulletsCounter(playerController.Max_Bullets, playerController.Max_Bullets);
     }
 
     public override void OnPlayerEnteredRoom(Player newPlayer)
