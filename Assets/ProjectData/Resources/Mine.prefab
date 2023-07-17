@@ -147,8 +147,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _mineDamage: 50
   _mineChargeDelay: 1500
-  _explosionRadius: 2.5
-  _explosionForce: 150
+  _explosionRadius: 10
+  _explosionForce: 500
   _audioSource: {fileID: -2706551216519734142}
 --- !u!114 &-5730138457157773650
 MonoBehaviour:

@@ -298,6 +298,10 @@ MonoBehaviour:
   _gun: {fileID: 6594277020770335004}
   _cameraTransform: {fileID: 8493225760196304975}
   _bulletSpawnPosition: {fileID: 6112876063842393876}
+  _audioSource: {fileID: 5491384571815990040}
+  _audioClips:
+  - {fileID: 8300000, guid: b25225c72201cd740b16b95b86d57940, type: 3}
+  - {fileID: 8300000, guid: df49938a1860650418b6d5654ed436be, type: 3}
   _playerThrottle: 5
   _jumpForce: 5
   _mouseSensitivity: 1

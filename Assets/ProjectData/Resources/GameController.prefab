@@ -47,7 +47,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _playerPrefab: {fileID: 8268446628686846662, guid: 797767f5d9ba0f84f9786983ef209f25, type: 3}
   _uiPrefab: {fileID: 5834125787252331865, guid: 03acab24ec43ee043b0d5115fcddebef, type: 3}
+  _gameStatsPrefab: {fileID: 5717623054225159567, guid: 0e0637a344b46664e819685016ee6424, type: 3}
   _levelView: {fileID: 0}
+  _uiContainer: {fileID: 0}
+  _playerReviveTime: 1500
 --- !u!114 &255692899404555634
 MonoBehaviour:
   m_ObjectHideFlags: 0

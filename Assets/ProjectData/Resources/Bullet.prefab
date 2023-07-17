@@ -227,7 +227,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8887d635ad273614591772737b69186c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _bulletStartingForce: 200
+  _bulletStartingForce: 500
   _bulletDamage: 10
 --- !u!114 &-3389666841034046222
 MonoBehaviour:

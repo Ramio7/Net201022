@@ -18,20 +18,16 @@ public class GameStatisticsPanelController : MonoBehaviourPunCallbacks, IPunObse
 
     public static GameStatisticsPanelController Instance;
 
-    private void Awake()
+    private void Start()
     {
         Instance = this;
         PhotonNetwork.AddCallbackTarget(this);
-        
+
         if (photonView.IsMine)
         {
-            var playerList = PhotonNetwork.CurrentRoom.Players;
-            foreach (var player in playerList)
-            {
-                AddGameStatistics(player.Value);
-            }
+            InitPLayersStats();
             MatchController.Instance.OnTimeExpired += SendPlayerStatistics;
-            MatchController.Instance.OnMatchEnd += SetGameStatisticsCanvasActive;
+            MatchController.Instance.OnMatchStart += RestartPlayerStatistics;
         }
     }
 
@@ -43,19 +39,35 @@ public class GameStatisticsPanelController : MonoBehaviourPunCallbacks, IPunObse
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
-        //if (photonView.IsRoomView && stream.IsWriting)
-        //{
-        //    stream.SendNext(_gameEventsText.text);
-        //}
-        //else
-        //{
-        //    _gameEventsText.text = (string)stream.ReceiveNext();
-        //}
+        if (stream.IsWriting)
+        {
+            stream.SendNext(_gameEventsText.text);
+        }
+        else
+        {
+            _gameEventsText.text = (string)stream.ReceiveNext();
+        }
+    }
+
+    private void RestartPlayerStatistics()
+    {
+        var playerList = PhotonNetwork.CurrentRoom.Players;
+        foreach (var player in playerList) ClearGameStatistics(player.Value);
+        InitPLayersStats();
+    }
+
+    private void InitPLayersStats()
+    {
+        var playerList = PhotonNetwork.CurrentRoom.Players;
+        foreach (var player in playerList)
+        {
+            AddGameStatistics(player.Value);
+        }
     }
 
     private void SetGameStatisticsCanvasActive(bool isActive) => _gameStatisticsCanvas.enabled = isActive;
 
-    private void AddGameStatistics(Player player)
+    private async void AddGameStatistics(Player player)
     {
         var lineGameObject = PhotonNetwork.Instantiate(_playerGameStatisticsPrefab.name, _gameStatisticsParent.position, Quaternion.identity);
         lineGameObject.transform.SetParent(_gameStatisticsParent, false);
@@ -64,9 +76,16 @@ public class GameStatisticsPanelController : MonoBehaviourPunCallbacks, IPunObse
         _playerLinesList.Add(playerGameStatistics);
         if (PhotonNetwork.LocalPlayer == player)
         {
+            await Task.Run(() => WaitPlayerInstanceAsync());
             PlayerController.Instance.OnPlayerIsDeadForStats += SetPLayerStatisticsOnKill;
             PlayerController.Instance.OnPlayerIsDeadForStats += SendGameEventMessange;
         }
+    }
+
+    private async Task WaitPlayerInstanceAsync()
+    {
+        while (PlayerController.Instance == null) await Task.Delay(100);
+        return;
     }
 
     private void ClearGameStatistics(Player player)
@@ -136,11 +155,11 @@ public class GameStatisticsPanelController : MonoBehaviourPunCallbacks, IPunObse
 
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
-        AddGameStatistics(newPlayer);
+        if (photonView.IsMine) AddGameStatistics(newPlayer);
     }
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
-        ClearGameStatistics(otherPlayer);
+        if (photonView.IsMine) ClearGameStatistics(otherPlayer);
     }
 }

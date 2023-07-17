@@ -3,7 +3,7 @@ using Photon.Realtime;
 using TMPro;
 using UnityEngine;
 
-public class PlayerGameStatistics: MonoBehaviour, IPunObservable
+public class PlayerGameStatistics: MonoBehaviourPunCallbacks, IPunObservable
 {
     public struct GameStatistics
     {
@@ -36,6 +36,23 @@ public class PlayerGameStatistics: MonoBehaviour, IPunObservable
         PlayerStatistics.Assists.OnValueChanged -= SetPlayerAssists;
         PlayerStatistics.Deaths.OnValueChanged -= SetPlayerDeaths;
     }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(PlayerStatistics.Kills.Value);
+            stream.SendNext(PlayerStatistics.Assists.Value);
+            stream.SendNext(PlayerStatistics.Deaths.Value);
+        }
+        else
+        {
+            PlayerStatistics.Kills.Value = (int)stream.ReceiveNext();
+            PlayerStatistics.Assists.Value = (int)stream.ReceiveNext();
+            PlayerStatistics.Deaths.Value = (int)stream.ReceiveNext();
+        }
+    }
+
     private void InitPLayerStatistics()
     {
         PlayerStatistics = new()
@@ -59,20 +76,4 @@ public class PlayerGameStatistics: MonoBehaviour, IPunObservable
     private void SetPlayerKills(int kills) => _playerKills.text = kills.ToString();
     private void SetPlayerAssists(int assists) => _playerAssists.text = assists.ToString();
     private void SetPlayerDeaths(int deaths) => _playerDeaths.text = deaths.ToString();
-
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-    {
-        if (stream.IsWriting)
-        {
-            stream.SendNext(PlayerStatistics.Kills.Value);
-            stream.SendNext(PlayerStatistics.Assists.Value);
-            stream.SendNext(PlayerStatistics.Deaths.Value);
-        }
-        else
-        {
-            PlayerStatistics.Kills.Value = (int)stream.ReceiveNext();
-            PlayerStatistics.Assists.Value = (int)stream.ReceiveNext();
-            PlayerStatistics.Deaths.Value = (int)stream.ReceiveNext();
-        }
-    }
 }

@@ -20,6 +20,7 @@ public class PlayFabAccountManager : MonoBehaviour
     public string EMail { get => _playFabEmail; set => _playFabEmail = value; }
     public string PlayFabLoginUsername { get => _playFabLoginUsername; set => _playFabLoginUsername = value; }
     public string PlayFabLoginPassword { get => _playFabLoginPassword; set => _playFabLoginPassword = value; }
+    public static string PlayFabId { get; private set; }
 
     public event Action<string, Color> OnCreateAccountMessageUpdate;
     public event Action<string, Color> OnLoginMessageUpdate;
@@ -39,6 +40,7 @@ public class PlayFabAccountManager : MonoBehaviour
             RequireBothUsernameAndEmail = true,
         }, result =>
         {
+            PlayFabId = result.PlayFabId;
             CreateUserXPData(result);
             SetUserCreditsStartAmount(result);
             Debug.Log($"Success: {_playFabUserName}");

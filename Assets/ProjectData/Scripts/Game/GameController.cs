@@ -1,5 +1,4 @@
 using Photon.Pun;
-using Photon.Realtime;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -8,15 +7,15 @@ public class GameController : MonoBehaviourPunCallbacks
 {
     [SerializeField] private GameObject _playerPrefab;
     [SerializeField] private GameObject _uiPrefab;
-    [SerializeField] private GameObject _gameStatisticsPrefab;
+    [SerializeField] private GameObject _gameStatsPrefab;
     [SerializeField] private LevelView _levelView;
+    [SerializeField] private Transform _uiContainer;
     [SerializeField] private int _playerReviveTime;
 
     private GameObject _playerCharacter;
     private PlayerController _playerController;
     private GameUIPresenter _gameUIPresenter;
     private Vector3 _playerSpawnPosition;
-    private GameStatisticsPanelController _gameStatisticsPanelController;
 
     private void Awake()
     {
@@ -55,16 +54,9 @@ public class GameController : MonoBehaviourPunCallbacks
                 Debug.LogError("GameUIPresenter not attached to UI");
             InitGameUI(gameUIPresenter);
 
-            _gameStatisticsPanelController = FindFirstObjectByType<GameStatisticsPanelController>();
-
-            if (_gameStatisticsPanelController == null)
-            {
-                var uiContainerTransform = FindFirstObjectByType<UIContainer>().transform;
-                PhotonNetwork.Instantiate(_gameStatisticsPrefab.name, Vector3.zero, Quaternion.identity).
-                    TryGetComponent(out GameStatisticsPanelController gameStatisticsPanelController);
-                _gameStatisticsPanelController = gameStatisticsPanelController;
-                gameStatisticsPanelController.gameObject.transform.SetParent(uiContainerTransform, false);
-            }
+            PhotonNetwork.Instantiate(_gameStatsPrefab.name, _uiContainer.position, Quaternion.identity)
+                .TryGetComponent(out Canvas gameStatisticsPanelController);
+            gameStatisticsPanelController.gameObject.transform.SetParent(_uiContainer.transform, true);
         }
     }
 
@@ -114,15 +106,5 @@ public class GameController : MonoBehaviourPunCallbacks
     private static void SetPlayerBulletsMaximum(GameUIPresenter gameUIPresenter, PlayerController playerController)
     {
         gameUIPresenter.SetBulletsCounter(playerController.Max_Bullets, playerController.Max_Bullets);
-    }
-
-    public override void OnPlayerEnteredRoom(Player newPlayer)
-    {
-        //ChangePlayerColors();
-    }
-
-    public override void OnPlayerLeftRoom(Player otherPlayer)
-    {
-        /*ChangePlayerColors()*/
     }
 }

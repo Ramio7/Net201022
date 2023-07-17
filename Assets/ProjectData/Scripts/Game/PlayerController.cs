@@ -13,6 +13,8 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     [SerializeField] private GameObject _gun;
     [SerializeField] private Transform _cameraTransform;
     [SerializeField] private Transform _bulletSpawnPosition;
+    [SerializeField] private AudioSource _audioSource;
+    [SerializeField] private List<AudioClip> _audioClips;
     [SerializeField, Range(5f, 15f)] private float _playerThrottle;
     [SerializeField, Range(1f, 10f)] private float _jumpForce;
     [SerializeField, Range(0.1f, 5f)] private float _mouseSensitivity;
@@ -39,6 +41,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     public ReactiveProperty<bool> IsJumping = new(false);
     public ReactiveProperty <bool> IsMineCharging = new(false);
     public ReactiveProperty<bool> IsReloading = new(false);
+    public ReactiveProperty<bool> IsMoving = new(false);
 
     public List<MeshRenderer> MeshList { get; private set; }
 
@@ -109,6 +112,8 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
         if (Input.GetKeyUp(KeyCode.Space)) IsJumping.Value = true;
 
         if (Input.GetKeyUp(KeyCode.R)) IsReloading.Value = true;
+
+        IsMoving.Value = false;
     }
 
     private void FixedUpdate()
@@ -120,6 +125,9 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
 
         if (_axisVertical != 0) Move(_axisVertical);
         if (_axisHorizontal != 0) Strafe(_axisHorizontal);
+
+        if (IsMoving.Value) _audioSource.PlayOneShot(_audioClips[0]);
+        if (IsJumping.Value) _audioSource.PlayOneShot(_audioClips[1]);
 
         _rigidbody.inertiaTensor = Vector3.zero;
     }
@@ -133,7 +141,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
-        if (photonView.IsMine && stream.IsWriting)
+        if (stream.IsWriting)
         {
             stream.SendNext(IsFiring.Value);
             stream.SendNext(Health.Value);
@@ -149,9 +157,17 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
         }
     }
 
-    private void Move(float axisVertical) => _rigidbody.AddForce(axisVertical * _playerThrottle * Time.deltaTime * transform.forward, ForceMode.VelocityChange);
+    private void Move(float axisVertical)
+    {
+        _rigidbody.AddForce(axisVertical * _playerThrottle * Time.deltaTime * transform.forward, ForceMode.VelocityChange);
+        IsMoving.Value = true;
+    }
 
-    private void Strafe(float axisHorizontal) => _rigidbody.AddForce(axisHorizontal * _playerThrottle * Time.deltaTime * transform.right, ForceMode.VelocityChange);
+    private void Strafe(float axisHorizontal)
+    {
+        _rigidbody.AddForce(axisHorizontal * _playerThrottle * Time.deltaTime * transform.right, ForceMode.VelocityChange);
+        IsMoving.Value = true;
+    }
 
     private void RotateCharacter(float scroll) => transform.Rotate(Vector3.up, scroll * _mouseSensitivity);
 
