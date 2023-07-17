@@ -136,6 +136,8 @@ GameObject:
   - component: {fileID: 233866973}
   - component: {fileID: 233866972}
   - component: {fileID: 233866976}
+  - component: {fileID: 233866977}
+  - component: {fileID: 233866978}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -237,8 +239,43 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b92c997a4e41ba4db26fb14773c92a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _matchTimeTotal: 300
+  _matchTimeTotal: 120
   _timerText: {fileID: 1771059148}
+--- !u!114 &233866977
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 233866971}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24a3631e2cf96ba43a904ef209f477d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &233866978
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 233866971}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents:
+  - {fileID: 233866976}
+  sceneViewId: 23
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &497734092
 GameObject:
   m_ObjectHideFlags: 0
@@ -648,18 +685,18 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 24300002, guid: bb435a10e7f381b4a8c263b63eb2843c, type: 2}
-  m_audioClip: {fileID: 0}
-  m_PlayOnAwake: 0
+  m_audioClip: {fileID: 8300000, guid: d680ab3e8002f7d488a86d72d5880466, type: 3}
+  m_PlayOnAwake: 1
   m_Volume: 0.2
   m_Pitch: 1
-  Loop: 0
+  Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
   Priority: 128
   DopplerLevel: 1
-  MinDistance: 1
-  MaxDistance: 500
+  MinDistance: 0
+  MaxDistance: 0.5
   Pan2D: 0
   rolloffMode: 0
   BypassEffects: 0
@@ -771,7 +808,7 @@ RectTransform:
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 50, y: -50}
   m_SizeDelta: {x: 200, y: 50}
-  m_Pivot: {x: 0, y: 0.5}
+  m_Pivot: {x: 0, y: 1}
 --- !u!114 &1771059148
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -916,7 +953,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _playerPrefab: {fileID: 8268446628686846662, guid: 797767f5d9ba0f84f9786983ef209f25, type: 3}
   _uiPrefab: {fileID: 5834125787252331865, guid: 03acab24ec43ee043b0d5115fcddebef, type: 3}
+  _gameStatisticsPrefab: {fileID: 5717623054225159567, guid: 0e0637a344b46664e819685016ee6424, type: 3}
   _levelView: {fileID: 823819090}
+  _playerReviveTime: 1500
 --- !u!114 &1844292636
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -13,6 +13,7 @@ public class PlayFabAccountManager : MonoBehaviour
     [SerializeField] private string _playFabLoginUsername;
     [SerializeField] private string _playFabLoginPassword;
     private LoginWithPlayFabRequest _request;
+    private int _playerStartingCredits = 100;
 
     public string PlayFabUserName { get => _playFabUserName; set => _playFabUserName = value; }
     public string PlayFabPassWord { get => _playFabPassword; set => _playFabPassword = value; }
@@ -22,8 +23,6 @@ public class PlayFabAccountManager : MonoBehaviour
 
     public event Action<string, Color> OnCreateAccountMessageUpdate;
     public event Action<string, Color> OnLoginMessageUpdate;
-
-    public static event Action<float, string> OnUserHpUpdate;
 
     private void Awake()
     {
@@ -41,6 +40,7 @@ public class PlayFabAccountManager : MonoBehaviour
         }, result =>
         {
             CreateUserXPData(result);
+            SetUserCreditsStartAmount(result);
             Debug.Log($"Success: {_playFabUserName}");
             OnCreateAccountMessageUpdate.Invoke(result.ToString(), Color.green);
         }, error =>
@@ -52,21 +52,32 @@ public class PlayFabAccountManager : MonoBehaviour
 
     private void CreateUserXPData(RegisterPlayFabUserResult result)
     {
-        PlayFabServerAPI.UpdateUserData(new()
+        PlayFabClientAPI.UpdateUserData(new()
         {
-            AuthenticationContext = new()
+            AuthenticationContext = result.AuthenticationContext,
+            Data = new()
             {
-                PlayFabId = result.PlayFabId,
+                { "Experience", 0.ToString() },
             },
-            Data = new Dictionary<string, string>
-            {
-                { "Experience", "0"},
-            },
-            Permission = PlayFab.ServerModels.UserDataPermission.Public
+            Permission = UserDataPermission.Public,
         },
         result =>
         {
-            Debug.Log(result.Request.ToString());
+            
+        }, OnError());
+    }
+
+    private void SetUserCreditsStartAmount(RegisterPlayFabUserResult result)
+    {
+        PlayFabClientAPI.AddUserVirtualCurrency(new()
+        {
+            AuthenticationContext = result.AuthenticationContext,
+            VirtualCurrency = "CR",
+            Amount = _playerStartingCredits,
+        },
+        result =>
+        {
+
         }, OnError());
     }
 

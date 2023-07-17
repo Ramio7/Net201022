@@ -3,13 +3,11 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class GameUIPresenter : MonoBehaviourPunCallbacks
+public class GameUIPresenter : MonoBehaviour
 {
     [Header("UI fields")]
     [SerializeField] private Slider _playerHp;
     [SerializeField] private TMP_Text _ammoCounter;
-    [SerializeField] private TMP_Text _gameEventsBar;
-    [SerializeField] private Canvas _gameStatisticsCanvas;
     [SerializeField] private Canvas _exitGameCanvas;
     [SerializeField] private Button _yesButton;
     [SerializeField] private Button _noButton;
@@ -22,7 +20,7 @@ public class GameUIPresenter : MonoBehaviourPunCallbacks
         SubscribeEvents();
     }
 
-    public override void OnDisable()
+    private void OnDisable()
     {
         ShowMouseCursor();
         UnsubscribeEvents();
@@ -31,9 +29,6 @@ public class GameUIPresenter : MonoBehaviourPunCallbacks
     private void Update()
     {
         if (Input.GetKeyUp(KeyCode.Escape)) SetExitCanvasActiveSelf();
-
-        if (Input.GetKey(KeyCode.Tab)) SetStatisticsCanvasActiveSelf();
-        else SetStatisticsCanvasUnactiveSelf();
     }
 
     private void SubscribeEvents()
@@ -74,8 +69,5 @@ public class GameUIPresenter : MonoBehaviourPunCallbacks
         _exitGameCanvas.enabled = false;
         HideMouseCursor();
     }
-
-    private void SetStatisticsCanvasActiveSelf() => _gameStatisticsCanvas.enabled = true;
-    private void SetStatisticsCanvasUnactiveSelf() => _gameStatisticsCanvas.enabled= false;
     private void LeaveRoom() => PhotonNetwork.LeaveRoom();
 }

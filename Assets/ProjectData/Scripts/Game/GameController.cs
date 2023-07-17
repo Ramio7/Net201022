@@ -8,12 +8,15 @@ public class GameController : MonoBehaviourPunCallbacks
 {
     [SerializeField] private GameObject _playerPrefab;
     [SerializeField] private GameObject _uiPrefab;
+    [SerializeField] private GameObject _gameStatisticsPrefab;
     [SerializeField] private LevelView _levelView;
+    [SerializeField] private int _playerReviveTime;
 
     private GameObject _playerCharacter;
     private PlayerController _playerController;
     private GameUIPresenter _gameUIPresenter;
     private Vector3 _playerSpawnPosition;
+    private GameStatisticsPanelController _gameStatisticsPanelController;
 
     private void Awake()
     {
@@ -48,20 +51,28 @@ public class GameController : MonoBehaviourPunCallbacks
                 Debug.LogFormat("Ignoring scene load for {0}", SceneManagerHelper.ActiveSceneName);
             }
 
-            if (!PhotonNetwork.Instantiate(_uiPrefab.name, Vector3.zero, Quaternion.identity).TryGetComponent(out GameUIPresenter gameUIPresenter))
+            if (!Instantiate(_uiPrefab, Vector3.zero, Quaternion.identity).TryGetComponent(out GameUIPresenter gameUIPresenter))
                 Debug.LogError("GameUIPresenter not attached to UI");
             InitGameUI(gameUIPresenter);
 
-        }
+            _gameStatisticsPanelController = FindFirstObjectByType<GameStatisticsPanelController>();
 
-        //ChangePlayerColors();
+            if (_gameStatisticsPanelController == null)
+            {
+                var uiContainerTransform = FindFirstObjectByType<UIContainer>().transform;
+                PhotonNetwork.Instantiate(_gameStatisticsPrefab.name, Vector3.zero, Quaternion.identity).
+                    TryGetComponent(out GameStatisticsPanelController gameStatisticsPanelController);
+                _gameStatisticsPanelController = gameStatisticsPanelController;
+                gameStatisticsPanelController.gameObject.transform.SetParent(uiContainerTransform, false);
+            }
+        }
     }
 
     private void InitGameUI(GameUIPresenter gameUIPresenter)
     {
         _gameUIPresenter = gameUIPresenter;
         gameUIPresenter.playerMaxHP = _playerController.Max_Health;
-        _playerController.OnPlayerHpValueChanged += gameUIPresenter.SetPlayerHPSlider;
+        _playerController.Health.OnValueChanged += gameUIPresenter.SetPlayerHPSlider;
         _playerController.OnPlayerAmmoChanged += gameUIPresenter.SetBulletsCounter;
         SetPlayerBulletsMaximum(gameUIPresenter, _playerController);
     }
@@ -76,6 +87,7 @@ public class GameController : MonoBehaviourPunCallbacks
             _playerController.OnPlayerAmmoChanged -= _gameUIPresenter.SetBulletsCounter;
             _playerController.OnPlayerIsDead -= RevivePlayer;
         }
+        PhotonNetwork.Destroy(_playerController.gameObject);
         _playerController = null;
     }
 
@@ -87,65 +99,16 @@ public class GameController : MonoBehaviourPunCallbacks
         return playerController;
     }
 
-    //private void ChangePlayerColors()
-    //{
-    //    foreach (var playerCharacter in PhotonNetwork.CurrentRoom.Players.Values)
-    //    {
-    //        playerCharacter
-    //        switch (playerCharacter.ActorNumber)
-    //        {
-    //            case 1:
-    //                SetPlayerColor(Color.black, playerController);
-    //                break;
-    //            case 2:
-    //                SetPlayerColor(Color.cyan, playerController);
-    //                break;
-    //            case 3:
-    //                SetPlayerColor(Color.magenta, playerController);
-    //                break;
-    //            case 4:
-    //                SetPlayerColor(Color.blue, playerController);
-    //                break;
-    //            case 5:
-    //                SetPlayerColor(Color.gray, playerController);
-    //                break;
-    //            case 6:
-    //                SetPlayerColor(Color.green, playerController);
-    //                break;
-    //            case 7:
-    //                SetPlayerColor(Color.yellow, playerController);
-    //                break;
-    //            case 8:
-    //                SetPlayerColor(Color.white, playerController);
-    //                break;
-    //            case 9:
-    //                SetPlayerColor(Color.red, playerController);
-    //                break;
-    //            default:
-    //                float r = Random.Range(0.0f, 1.0f);
-    //                float g = Random.Range(0.0f, 1.0f);
-    //                float b = Random.Range(0.0f, 1.0f);
-    //                Color color = new(r, g, b);
-    //                SetPlayerColor(color, playerController);
-    //                break;
-    //        }
-    //    }
-    //}
-
-    //private void SetPlayerColor(Color color, PlayerController playerController)
-    //{
-    //    foreach (var mesh in playerController.MeshList) mesh.material.color = color;
-    //}
-
     private void SetPlayerSpawnPosition(Vector3 position) => _playerSpawnPosition = position;
 
     private async void RevivePlayer()
     {
-        await Task.Delay(5000);
+        await Task.Delay(_playerReviveTime);
         _levelView.GetSpawnPoint();
         _playerCharacter.transform.SetPositionAndRotation(_playerSpawnPosition, Quaternion.identity);
-
         _playerCharacter.SetActive(true);
+        _playerController.Health.Value = _playerController.Max_Health;
+        _playerController.BulletsCount.Value = _playerController.Max_Bullets;
     }
 
     private static void SetPlayerBulletsMaximum(GameUIPresenter gameUIPresenter, PlayerController playerController)
@@ -160,6 +123,6 @@ public class GameController : MonoBehaviourPunCallbacks
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
-        /*ChangePlayerColors()*/;
+        /*ChangePlayerColors()*/
     }
 }
