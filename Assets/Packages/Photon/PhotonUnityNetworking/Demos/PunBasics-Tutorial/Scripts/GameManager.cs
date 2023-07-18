@@ -38,7 +38,7 @@ namespace Photon.Pun.Demo.PunBasics
 
         [Tooltip("The prefab to use for representing the player")]
         [SerializeField]
-        private GameObject playerPrefab;
+        protected GameObject playerPrefab;
 
         #endregion
 
@@ -54,7 +54,7 @@ namespace Photon.Pun.Demo.PunBasics
 			// in case we started this demo with the wrong scene being active, simply load the menu scene
 			if (!PhotonNetwork.IsConnected)
 			{
-				SceneManager.LoadScene("PunBasics-Launcher");
+				SceneManager.LoadScene("MenuScene");
 
 				return;
 			}
@@ -134,8 +134,8 @@ namespace Photon.Pun.Demo.PunBasics
 		/// </summary>
 		public override void OnLeftRoom()
 		{
-            SceneManager.LoadScene("PunBasics-Launcher");
-        }
+			SceneManager.LoadScene("PunBasics-Launcher");
+		}
 
 		#endregion
 

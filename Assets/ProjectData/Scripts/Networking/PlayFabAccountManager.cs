@@ -3,6 +3,7 @@ using PlayFab.ClientModels;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class PlayFabAccountManager : MonoBehaviour
 {
@@ -13,9 +14,7 @@ public class PlayFabAccountManager : MonoBehaviour
     [SerializeField] private string _playFabLoginUsername;
     [SerializeField] private string _playFabLoginPassword;
     private LoginWithPlayFabRequest _request;
-    private PlayFabAuthenticationContext _authenticationContext;
-    private CharacterResult _currentCharacter;
-    private string _playFabId;
+    private int _playerStartingCredits = 100;
 
     public const int Max_User_Characters = 4;
     public string PlayFabUserName { get => _playFabUserName; set => _playFabUserName = value; }
@@ -23,11 +22,10 @@ public class PlayFabAccountManager : MonoBehaviour
     public string EMail { get => _playFabEmail; set => _playFabEmail = value; }
     public string PlayFabLoginUsername { get => _playFabLoginUsername; set => _playFabLoginUsername = value; }
     public string PlayFabLoginPassword { get => _playFabLoginPassword; set => _playFabLoginPassword = value; }
+    public static string PlayFabId { get; private set; }
 
     public event Action<string, Color> OnCreateAccountMessageUpdate;
     public event Action<string, Color> OnLoginMessageUpdate;
-
-    public static event Action<float, string> OnUserHpUpdate;
 
     private void Awake()
     {
@@ -41,10 +39,12 @@ public class PlayFabAccountManager : MonoBehaviour
             Username = _playFabUserName,
             Email = _playFabEmail,
             Password = _playFabPassword,
-            RequireBothUsernameAndEmail = true
+            RequireBothUsernameAndEmail = true,
         }, result =>
         {
-            _playFabId = result.PlayFabId;
+            PlayFabId = result.PlayFabId;
+            CreateUserXPData(result);
+            SetUserCreditsStartAmount(result);
             Debug.Log($"Success: {_playFabUserName}");
             GrantStartingItemsToUser(result);
             OnCreateAccountMessageUpdate.Invoke(result.ToString(), Color.green);
@@ -55,24 +55,34 @@ public class PlayFabAccountManager : MonoBehaviour
         });
     }
 
-    private void GrantStartingItemsToUser(RegisterPlayFabUserResult result)
+    private void CreateUserXPData(RegisterPlayFabUserResult result)
     {
-        List<string> items = new()
+        PlayFabClientAPI.UpdateUserData(new()
         {
-            "create_character_token",
-            "create_character_token",
-            "create_character_token",
-            "create_character_token"
-        };
-
-        PlayFabServerAPI.GrantItemsToUser(new()
-        {
-            PlayFabId = result.PlayFabId,
-            ItemIds = items
+            AuthenticationContext = result.AuthenticationContext,
+            Data = new()
+            {
+                { "Experience", 0.ToString() },
+            },
+            Permission = UserDataPermission.Public,
         },
         result =>
         {
-            Debug.Log($"New player now have {result.ItemGrantResults}");
+            
+        }, OnError());
+    }
+
+    private void SetUserCreditsStartAmount(RegisterPlayFabUserResult result)
+    {
+        PlayFabClientAPI.AddUserVirtualCurrency(new()
+        {
+            AuthenticationContext = result.AuthenticationContext,
+            VirtualCurrency = "CR",
+            Amount = _playerStartingCredits,
+        },
+        result =>
+        {
+
         }, OnError());
     }
 
@@ -93,45 +103,16 @@ public class PlayFabAccountManager : MonoBehaviour
             _request,
             result =>
             {
-                _authenticationContext = result.AuthenticationContext;
-                OnLoginSuccess(result.PlayFabId);
-                OnLoginMessageUpdate.Invoke($"{result.PlayFabId} connected to PlayFab", Color.green);
+                OnLoginMessageUpdate?.Invoke($"{result.PlayFabId} connected to PlayFab", Color.green);
             },
             error =>
             {
-                Debug.LogError(error.GenerateErrorReport());
-                OnLoginMessageUpdate.Invoke(error.GenerateErrorReport(), Color.red);
+                OnError();
+                OnLoginMessageUpdate?.Invoke(error.GenerateErrorReport(), Color.red);
             });
     }
 
-    private void OnLoginSuccess(string playFabId)
-    {
-        _playFabId = playFabId;
-        PlayFabClientAPI.UpdateUserData(new()
-        {
-            Data = new()
-            {
-                { "Health", 100.ToString() }
-            }
-        },
-            result =>
-            {
-                PlayFabClientAPI.GetUserData(new()
-                {
-                    PlayFabId = playFabId,
-                },
-                result =>
-                {
-                    if (float.TryParse(result.Data["Health"].Value, out var userHP)) OnUserHpUpdate?.Invoke(userHP, playFabId);
-                    else return;
-                    Debug.LogWarning($"User startin HP: {userHP}");
-                },
-                OnError());
-            },
-            OnError());
-    }
-
-    public List<CharacterResult> GetCharacterList()
+    private Action<PlayFabError> OnError()
     {
         List<CharacterResult> characterList = new();
         PlayFabClientAPI.GetAllUsersCharacters(new()

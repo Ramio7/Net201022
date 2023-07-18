@@ -15,15 +15,15 @@ public class RoomInfoContainer : MonoBehaviour
 
     public event Action<RoomInfo> OnRoomInfoContainerClick;
 
-    private void Awake()
+    private void OnEnable()
     {
-        Button = GetComponent<Button>();
-        Button.onClick.AddListener(GetRoomInfo);
+        GetComponent<Button>().onClick.AddListener(GetRoomInfo);
     }
 
-    private void OnDestroy() => Button.onClick.RemoveListener(GetRoomInfo);
-
-    public void GetRoomInfo() => OnRoomInfoContainerClick?.Invoke(ButtonRoomInfo);
+    private void OnDisable()
+    {
+        GetComponent<Button>().onClick.RemoveListener(GetRoomInfo);
+    }
 
     public void SetRoomInfo(RoomInfo roomInfo)
     {
@@ -35,5 +35,10 @@ public class RoomInfoContainer : MonoBehaviour
     {
         ButtonRoomInfo = null;
         _roomInfoText.text = string.Empty;
+    }
+
+    public void GetRoomInfo()
+    {
+        OnRoomInfoContainerClick.Invoke(ButtonRoomInfo);
     }
 }

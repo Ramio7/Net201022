@@ -1,18 +1,26 @@
 using Photon.Pun;
 using Photon.Realtime;
+using PlayFab;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PhotonManager : MonoBehaviourPunCallbacks
 {
     [SerializeField] private string _photonUsername;
-    [SerializeField] private string _roomname;
+    [SerializeField] private string _roomname = "game";
+    [SerializeField] private int _roomListUpdateDelay;
 
     private ClientState _currentState;
 
+    public static PhotonManager Instance { get; private set; }
+
     public event Action<List<RoomInfo>> OnRoomListUpdated;
     public event Action<string> OnClientStateChanged;
+    public event Action<Player> OnPlayerJoined;
+    public event Action<Player> OnPlayerLeft;
 
     public string PhotonUsername { get => _photonUsername; set => _photonUsername = value; }
     public string Roomname { get => _roomname; set => _roomname = value; }
@@ -21,6 +29,7 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     private void Awake()
     {
         DontDestroyOnLoad(this);
+        Instance = this;
     }
 
     private void Update()
@@ -32,8 +41,10 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         }
     }
 
-    public void ConnectPhoton()
+    public async void ConnectPhoton()
     {
+        await Task.Run(() => WaitPlayFabLogin());
+
         PhotonNetwork.AutomaticallySyncScene = true;
 
         if (PhotonNetwork.IsConnected)
@@ -46,8 +57,14 @@ public class PhotonManager : MonoBehaviourPunCallbacks
             PhotonNetwork.NickName = _photonUsername;
             PhotonNetwork.ConnectUsingSettings();
             PhotonNetwork.GameVersion = PhotonNetwork.AppVersion;
-            PhotonNetwork.JoinLobby();
+            PhotonNetwork.AddCallbackTarget(this);
         }
+    }
+
+    private Task WaitPlayFabLogin()
+    {
+        while (!PlayFabClientAPI.IsClientLoggedIn()) Task.Delay(100);
+        return Task.FromResult(0);
     }
 
     public void DisconnectPhoton()
@@ -61,13 +78,18 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         {
             IsOpen = true,
             IsVisible = RoomIsPrivate,
-            MaxPlayers = 4,
         });
     }
 
-    public void JoinRoom(RoomInfo roomInfo) => PhotonNetwork.JoinRoom(roomInfo.Name);
+    public void JoinRoom(RoomInfo roomInfo)
+    {
+        PhotonNetwork.JoinRoom(roomInfo.Name);
+    }
 
-    public void JoinRoom(string roomName) => PhotonNetwork.JoinRoom(roomName);
+    public void JoinRoom(string roomName)
+    {
+        PhotonNetwork.JoinRoom(roomName);
+    }
 
     public void JoinRandomRoom()
     {
@@ -81,14 +103,55 @@ public class PhotonManager : MonoBehaviourPunCallbacks
 
     public void StartTheGame()
     {
-        PhotonNetwork.CurrentRoom.IsOpen = false;
-        PhotonNetwork.CurrentRoom.IsVisible = false;
-        PhotonNetwork.LoadLevel($"PunBasics-Room for {PhotonNetwork.CurrentRoom.PlayerCount}-edited");
+        PhotonNetwork.LoadLevel("GameMapScene");
+    }
+
+    public override void OnJoinRoomFailed(short returnCode, string message)
+    {
+        Debug.Log($"{returnCode}: {message}");
+        JoinRandomRoom();
+    }
+
+    public override void OnJoinRandomFailed(short returnCode, string message)
+    {
+        CreateRoom();
     }
 
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
-        OnRoomListUpdated.Invoke(roomList);
-        Debug.Log("Room list updated");
+        OnRoomListUpdated?.Invoke(roomList);
+    }
+
+    public override void OnJoinedRoom()
+    {
+        if (PhotonNetwork.LocalPlayer.IsMasterClient) StartTheGame();
+        OnPlayerJoined?.Invoke(PhotonNetwork.LocalPlayer);
+    }
+
+    public override void OnLeftRoom()
+    {
+        OnPlayerLeft?.Invoke(PhotonNetwork.LocalPlayer);
+        DisconnectPhoton();
+        if (SceneManager.GetActiveScene().name != "MenuScene") SceneManager.LoadScene("MenuScene");
+    }
+
+    public override void OnPlayerEnteredRoom(Player newPlayer)
+    {
+        OnPlayerJoined?.Invoke(newPlayer);
+    }
+
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        OnPlayerLeft?.Invoke(otherPlayer);
+    }
+
+    public override void OnConnectedToMaster()
+    {
+        PhotonNetwork.JoinLobby();
+    }
+
+    public override void OnJoinedLobby()
+    {
+        JoinRoom(_roomname);
     }
 }
